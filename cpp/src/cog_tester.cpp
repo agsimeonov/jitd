@@ -13,7 +13,7 @@
 #include "test.hpp"
 #include "rewrite.hpp"
 #include "policy.hpp"
-#include "policy/cracker.hpp"
+#include "policy/Cracker.hpp"
 
 using namespace std;
 using namespace std::placeholders;

@@ -2,6 +2,7 @@
 #define _RWLOCK_H_SHIELD
 
 #include <atomic>
+#include <condition_variable>
 #include <mutex>
 
 class RWLock

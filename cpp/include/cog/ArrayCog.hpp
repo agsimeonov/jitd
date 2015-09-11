@@ -1,3 +1,5 @@
+#include <algorithm>
+
 template <class Tuple>
 class ArrayCog : public Cog<Tuple>
 {

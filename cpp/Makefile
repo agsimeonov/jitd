@@ -10,12 +10,7 @@ FILES = \
 HEADERS = $(shell find ${INCLUDE_PATH} -name '*.hpp') \
           $(patsubst %.jitd, %.hpp, $(shell find ${INCLUDE_PATH} -name '*.jitd'))
 
-ifeq ($(shell uname), Darwin)
-CPP_FLAGS = \
-  -std=c++11  
-endif
-
-CPP = g++ -I ${INCLUDE_PATH} -g $(CPP_FLAGS)
+CPP = g++ -pthread -I ${INCLUDE_PATH} -g -std=c++11
 
 all: driver workload_gen
 
