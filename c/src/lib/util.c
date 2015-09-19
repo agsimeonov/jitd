@@ -13,7 +13,8 @@ void printArrayCog(struct cog *cog) {
 
   if (cog->type == COG_ARRAY) {
     for (int i = 0; i < cog->data.array.len; i++) {
-      printf("%ld", cog->data.array.records->data[i].key);
+      int offset = cog->data.array.start;
+      printf("%ld", cog->data.array.records->data[i + offset].key);
       if (i + 1 < cog->data.array.len) printf(",");
     }
 
@@ -22,7 +23,8 @@ void printArrayCog(struct cog *cog) {
 
   if (cog->type == COG_SORTEDARRAY) {
     for (int i = 0; i < cog->data.sortedarray.len; i++) {
-      printf("%ld", cog->data.sortedarray.records->data[i].key);
+      int offset = cog->data.sortedarray.start;
+      printf("%ld", cog->data.sortedarray.records->data[i + offset].key);
       if (i + 1 < cog->data.sortedarray.len) printf(",");
     }
 
