@@ -1,7 +1,7 @@
 
 
 TARGETS = btree
-LIB_FILES = cog data
+LIB_FILES = cog data util
 REWRITE_FILES = adaptive_merge cracker
 FILES = \
   $(patsubst %, src/lib/%, $(LIB_FILES))\
