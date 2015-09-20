@@ -1,0 +1,11 @@
+#include "cog.h"
+
+
+/**
+ * The splay operation moves a given node to the root.
+ *
+ * @param root - current root of the tree
+ * @param node - node to be moved to the root
+ * @return the new root of the rearranged tree
+ */
+struct cog *splay(struct cog *root, struct cog *node);
