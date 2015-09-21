@@ -8,7 +8,7 @@ FILES = \
   $(patsubst %, src/rewrites/%, $(REWRITE_FILES))
 
 
-CC = gcc -Isrc/include -g
+CC = gcc -std=c11 -Isrc/include -g
 
 test: $(TARGETS)
 	@for i in $(TARGETS); do echo ====== Testing $$i ======; ./$$i; done
