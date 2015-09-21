@@ -94,15 +94,34 @@ struct cog *zagzig(struct cog *root, struct cog *node) {
 }
 
 /**
+ * Acquires the depth of a given node in a BTree.
+ *
+ * @param root - current root of the tree
+ * @param node - we want to know the depth of this node
+ * @return the depth of a given node
+ */
+int getDepth(struct cog *root, struct cog *node) {
+  if (root == node) {
+    return 0;
+  } else if (node->data.btree.sep <= root->data.btree.sep) {
+    return 1 + getDepth(root->data.btree.lhs, node);
+  } else {
+    return 1 + getDepth(root->data.btree.rhs, node);
+  }
+}
+
+/**
  * The splay operation moves a given node to the root.
  *
  * @param root - current root of the tree
  * @param node - node to be moved to the root
+ * @param depth - depth of node in the original tree
  * @return the new root of the rearranged tree
  */
-struct cog *splay(struct cog *root, struct cog *node) {
-  if (root == node || root == NULL || node == NULL) return root;
-  if (node->data.btree.sep <= root->data.btree.sep) {
+struct cog *splayDepth(struct cog *root, struct cog *node, int depth) {
+  if (root == node)  {
+    return root;
+  } else if (node->data.btree.sep <= root->data.btree.sep) {
     if (root->data.btree.lhs == node) {
       return zig(root, node);
     } else if (root->data.btree.lhs->data.btree.lhs == node) {
@@ -110,7 +129,15 @@ struct cog *splay(struct cog *root, struct cog *node) {
     } else if (root->data.btree.lhs->data.btree.rhs == node) {
       return zigzag(root, node);
     } else {
-      return zig(root, splay(root->data.btree.lhs, node));
+      if (depth % 2) {
+        return zig(root, splayDepth(root->data.btree.lhs, node, depth));
+      } else {
+        if (node->data.btree.sep <= root->data.btree.lhs->data.btree.sep) {
+          return zigzig(root, splayDepth(root->data.btree.lhs->data.btree.lhs, node, depth));
+        } else {
+          return zigzag(root, splayDepth(root->data.btree.lhs->data.btree.rhs, node, depth));
+        }
+      }
     }
   } else {
     if (root->data.btree.rhs == node) {
@@ -120,7 +147,26 @@ struct cog *splay(struct cog *root, struct cog *node) {
     } else if (root->data.btree.rhs->data.btree.lhs == node) {
       return zagzig(root, node);
     } else {
-      return zag(root, splay(root->data.btree.rhs, node));
+      if (depth % 2) {
+        return zag(root, splayDepth(root->data.btree.rhs, node, depth));
+      } else {
+        if (node->data.btree.sep > root->data.btree.rhs->data.btree.sep) {
+          return zagzag(root, splayDepth(root->data.btree.rhs->data.btree.rhs, node, depth));
+        } else {
+          return zagzig(root, splayDepth(root->data.btree.rhs->data.btree.lhs, node, depth));
+        }
+      }
     }
   }
+}
+
+/**
+ * The splay operation moves a given node to the root.
+ *
+ * @param root - current root of the tree
+ * @param node - node to be moved to the root
+ * @return the new root of the rearranged tree
+ */
+struct cog *splay(struct cog *root, struct cog *node) {
+  return splayDepth(root, node, getDepth(root, node));
 }
