@@ -3,6 +3,8 @@
 #include <time.h>
 #include "cog.h"
 #include "cracker.h"
+#include "splay.h"
+#include "util.h"
 #include "adaptive_merge.h"
 
 #define BUFFER_SIZE 10
@@ -107,6 +109,28 @@ void test5() {
   free(ret);
 }
 
+splayTest() {
+  printf("Splaying Test:\n");
+  cog *six = make_btree(NULL, NULL, 6);
+  cog *eight = make_btree(NULL, NULL, 8);
+  cog *seven = make_btree(six, eight, 7);
+  cog *four = make_btree(NULL, NULL, 4);
+  cog *five = make_btree(four, seven, 5);
+  cog *two = make_btree(NULL, NULL, 2);
+  cog *three = make_btree(two, five, 3);
+  cog *ten = make_btree(NULL, NULL, 10);
+  cog *nine = make_btree(three, ten, 9);
+  cog *zero = make_btree(NULL, NULL, 0);
+  cog *one = make_btree(zero, nine, 1);
+  cog *twelve = make_btree(NULL, NULL, 12);
+  cog *eleven = make_btree(one, twelve, 11);
+  printf("Before splay:\n");
+  printJITD(eleven,0);
+  printf("After splay:\n");
+  splay(eleven, seven);
+  printJITD(seven, 0);
+}
+
 int main(int argc, char **argv)
 {
   int rand_start = 42; //time(NULL)
@@ -120,4 +144,5 @@ int main(int argc, char **argv)
   test4();
   srand(rand_start);
   test5();
+  splayTest();
 }
