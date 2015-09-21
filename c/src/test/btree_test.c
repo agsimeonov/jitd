@@ -109,7 +109,7 @@ void test5() {
   free(ret);
 }
 
-splayTest() {
+void splayTest() {
   printf("Splaying Test:\n");
   cog *six = make_btree(NULL, NULL, 6);
   cog *eight = make_btree(NULL, NULL, 8);

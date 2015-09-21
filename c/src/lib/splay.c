@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "cog.h"
 
 
@@ -99,6 +101,7 @@ struct cog *zagzig(struct cog *root, struct cog *node) {
  * @return the new root of the rearranged tree
  */
 struct cog *splay(struct cog *root, struct cog *node) {
+  if (root == node || root == NULL || node == NULL) return root;
   if (node->data.btree.sep <= root->data.btree.sep) {
     if (root->data.btree.lhs == node) {
       return zig(root, node);
