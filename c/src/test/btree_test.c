@@ -9,7 +9,7 @@
 
 
 #define BUFFER_SIZE 500000
-#define KEY_RANGE   1000000
+#define KEY_RANGE   100000
 
 buffer mk_random_buffer(int size)
 {
@@ -161,28 +161,28 @@ int main(int argc, char **argv)
   double elapsed;
 
   start = clock();
-  c = mk_random_array(1000000);
+  c = mk_random_array(100000);
   stop = clock();
   elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
   printf("init in ms: %f\n", elapsed);
 
-  c = mk_random_array(1000000);
+  c = mk_random_array(100000);
   start = clock();
-  crack_one(c, 500000);
+  crack_one(c, 50000);
   stop = clock();
   elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
   printf("crack-1 in ms: %f\n", elapsed);
 
-  c = mk_random_array(1000000);
+  c = mk_random_array(100000);
   start = clock();
-  crack(c, 333333, 666666);
+  crack(c, 33333, 66666);
   stop = clock();
   elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
   printf("crack in ms: %f\n", elapsed);
 
-  c = mk_random_array(1000000);
+  c = mk_random_array(100000);
   start = clock();
-  amerge(c, 333333, 666666);
+  amerge(c, 33333, 66666);
   stop = clock();
   elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
   printf("amerge in ms: %f\n", elapsed);
