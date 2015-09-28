@@ -1,13 +1,6 @@
 package jitd;
 
-import java.util.*;
-
 import org.apache.logging.log4j.Logger;
-
-import org.astraldb.util.GetArgs;
-
-import jitd.compare.*;
-import jitd.test.*;
 
 public class Driver {
   
@@ -58,104 +51,33 @@ public class Driver {
   
   public static void main(String argList[])
   {
-    int size = 1000*1000*100;
-    long readWidth = 1000*1000;
-    int writeSize = 1000*1000;
-    int readRatio = 100;
-    int opCount = 1000;
-    boolean dump = false;
-    boolean fullScan = false;
-    boolean allowGC = false;
-    Mode mode = new MergeMode();
+    ArrayCog c = new ArrayCog(1000000);
+    KeyValueIterator.RandomIterator rand = new KeyValueIterator.RandomIterator();
+    c.load(rand);
+    CrackerMode mode = new CrackerMode();
+    long startTime = System.currentTimeMillis();
+    mode.crackOne(c, 500000);
+    long endTime   = System.currentTimeMillis();
+    long totalTime = endTime - startTime;
+    System.out.println(totalTime);
     
-    GetArgs args = new GetArgs(argList);
-    String arg;
+    c = new ArrayCog(1000000);
+    rand = new KeyValueIterator.RandomIterator();
+    c.load(rand);
+    startTime = System.currentTimeMillis();
+    mode.crack(c, 333333, 666666);
+    endTime   = System.currentTimeMillis();
+    totalTime = endTime - startTime;
+    System.out.println(totalTime);
     
-    while((arg = args.nextArg()) != null)
-    {
-      log.trace("Arg: {}", arg);
-      if(arg.equals("--size")) {
-        size = args.nextInt();
-      } else if(arg.equals("--read")) {
-        readWidth = args.nextInt();
-      } else if(arg.equals("--write")) {
-        writeSize = args.nextInt();
-      } else if(arg.equals("--ratio")) {
-        readRatio = args.nextInt();
-      } else if(arg.equals("--ops")) {
-        opCount = args.nextInt();
-      } else if(arg.equals("--dump")) {
-        dump = true;
-      } else if(arg.equals("--fullScan")) {
-        fullScan = true;
-      } else if(arg.equals("--gc")) {
-        allowGC = true;
-      } else if(arg.equals("--mode")) {
-        String modeString = args.next().toLowerCase();
-        switch(modeString){
-          case "naive"  : mode = new Mode();        break;
-          case "cracker": mode = new CrackerMode(); break;
-          case "merge"  : mode = new PushdownMergeMode();   break;
-          default: 
-            System.err.println("Unknown Mode: "+modeString);
-            usage();
-            System.exit(-1);
-        }
-      } else if(arg.equals("-?") || arg.equals("--help")) {
-        usage();
-        System.exit(0);
-      } else {
-        System.err.println("Unknown argument: '"+arg+"'");
-        usage();
-        System.exit(-1);
-      }
-    }
-    
-    
-    Random rand = new Random();
-    KeyValueIterator src = new KeyValueIterator.RandomIterator();
-    ArrayCog root = new ArrayCog(size);
-    
-    log.info("Loading...");
-    root.load(src);
-    
-    Driver driver = new Driver(mode, root);
-    
-    log.info("Running...");
-    long tot = 0;
-    for(int i = 0; i < opCount; i++){
-      if(rand.nextInt(100) < readRatio){
-        long k = KeyValueIterator.RandomIterator.coerceToKeyRange(rand.nextLong());
-        long start = System.nanoTime();
-        KeyValueIterator iter = driver.scan(k, k + readWidth);
-        long end = System.nanoTime();
-        if(fullScan) { while(iter.next()){ /* do nothing? */ } }
-        long fullEnd = System.nanoTime();
-        log.info("Read ({}): {} us (w/ scan: {} us)", 
-                 i, (end-start) / 1000, (fullEnd-start) / 1000);
-        tot += end - start;
-      } else {
-        ArrayCog insert = new ArrayCog(writeSize);
-        long loadStart = System.nanoTime();
-        insert.load(src);
-        long start = System.nanoTime();
-        driver.insert(insert);
-        long end = System.nanoTime();
-        log.info("Write ({}): {} us (w/ load: {} us)", 
-                 i, (end-start) / 1000, (end-loadStart) / 1000);
-        tot += end - start;
-      }
-      if(allowGC){
-        long start = System.nanoTime();
-        System.gc();
-        try {
-          Thread.sleep(50);
-        } catch(InterruptedException e) { log.trace("Interrupted"); }
-        long end = System.nanoTime();
-        log.info("GC: {} us", (end-start) / 1000);
-      }
-    }
-    log.info("Total time: {} us", tot / 1000);
-    if(dump) { driver.dump(); }
+    c = new ArrayCog(100000);
+    rand = new KeyValueIterator.RandomIterator();
+    c.load(rand);
+    EnhancedMergeMode mode2 = new EnhancedMergeMode();
+    startTime = System.currentTimeMillis();
+    mode2.amerge(c, 333333, 666666);
+    endTime   = System.currentTimeMillis();
+    totalTime = endTime - startTime;
+    System.out.println(totalTime);
   }
 }
