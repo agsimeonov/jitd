@@ -19,7 +19,7 @@ buffer mk_random_buffer(int size)
     b->data[i].key = rand() % KEY_RANGE;
     b->data[i].value = rand();
   }
-  record_dump(b->data, 0, size);
+//  record_dump(b->data, 0, size);
   return b;
 }
 
