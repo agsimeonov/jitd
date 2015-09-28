@@ -7,8 +7,9 @@
 #include "util.h"
 #include "adaptive_merge.h"
 
-#define BUFFER_SIZE 10
-#define KEY_RANGE   1000
+
+#define BUFFER_SIZE 500000
+#define KEY_RANGE   2000000
 
 buffer mk_random_buffer(int size)
 {
@@ -131,18 +132,90 @@ void splayTest() {
   printJITD(seven, 0);
 }
 
+void perfTest() {
+  // get current nanotime
+  struct cog *c = make_array(0, 1000, mk_random_buffer(1000));
+  // get current nantotime
+  // subtract to get difference this is how long it took to run
+  // print result
+}
+
 int main(int argc, char **argv)
 {
-  int rand_start = 42; //time(NULL)
-  srand(rand_start);
-  test1();
-  srand(rand_start);
-  test2();
-  srand(rand_start);
-  test3();
-  srand(rand_start);
-  test4();
-  srand(rand_start);
-  test5();
-  splayTest();
+//  int rand_start = 42; //time(NULL)
+//  srand(rand_start);
+//  test1();
+//  srand(rand_start);
+//  test2();
+//  srand(rand_start);
+//  test3();
+//  srand(rand_start);
+//  test4();
+//  srand(rand_start);
+//  test5();
+//  splayTest();
+//  perfTest();
+  clock_t start = clock();
+  // Execuatable code
+  cog *c = make_concat(mk_random_array(500000),
+                       mk_random_array(500000));
+
+  clock_t stop = clock();
+  double elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+
+  printf("Time elapsed cancat in ms: %f\n", elapsed);
+
+  start = clock();
+  crack_one(c, 500000);
+  stop = clock();
+  elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+  printf("Time elapsed cracke-1 in ms: %f\n", elapsed);
+//
+//  start = clock();
+//  crack_scan(c, 10, 500);
+//  stop = clock();
+//  elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+//  printf("Time elapsed cracke-scan in ms: %f\n", elapsed);
+//
+//
+//  start = clock();
+//
+//  pushdown_concats(c, 1000, 5000);
+//  stop = clock();
+//  elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+//  printf("Time elapsed pushdown_concats in ms: %f\n", elapsed);
+
+//
+//  start = clock();
+//  partition_cog(c);
+//  stop = clock();
+//  elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+//  printf("Time elapsed partition_cog in ms: %f\n", elapsed);
+//
+//  start = clock();
+//  amerge(c, 10, 500);
+//  stop = clock();
+//  elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+//  printf("Time elapsed amerge in ms: %f\n", elapsed);
+//
+//  start = clock();
+//  merge_partitions(c, 10, 500);
+//  stop = clock();
+//  elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+//  printf("Time elapsed merge_partitions in ms: %f\n", elapsed);
+//
+//  start = clock();
+//  extract_partitions(c, 10, 500);
+//  stop = clock();
+//  elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+//  printf("Time elapsed extract_partitions in ms: %f\n", elapsed);
+
+
+
+
+
+
+
+
+
 }
