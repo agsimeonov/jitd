@@ -142,29 +142,10 @@ void perfTest() {
 
 int main(int argc, char **argv)
 {
-//  int rand_start = 42; //time(NULL)
-//  srand(rand_start);
-//  test1();
-//  srand(rand_start);
-//  test2();
-//  srand(rand_start);
-//  test3();
-//  srand(rand_start);
-//  test4();
-//  srand(rand_start);
-//  test5();
-//  splayTest();
-//  perfTest();
   clock_t start;
   cog *c;
   clock_t stop;
   double elapsed;
-
-  start = clock();
-  c = mk_random_array(1000000);
-  stop = clock();
-  elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
-  printf("init in ms: %f\n", elapsed);
 
   c = mk_random_array(1000000);
   start = clock();

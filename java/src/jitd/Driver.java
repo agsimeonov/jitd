@@ -52,20 +52,27 @@ public class Driver {
   public static void main(String argList[])
   {
     ArrayCog c = new ArrayCog(1000000);
-    KeyValueIterator.RandomIterator rand = new KeyValueIterator.RandomIterator();
+    KeyValueIterator.RandomIterator rand;
+    Mode mode;
+    long startTime;
+    long endTime;
+    long totalTime;
+    
+    c = new ArrayCog(1000000);
+    rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
-    CrackerMode mode = new CrackerMode();
-    long startTime = System.currentTimeMillis();
-    mode.crackOne(c, 500000);
-    long endTime   = System.currentTimeMillis();
-    long totalTime = endTime - startTime;
+    mode = new CrackerMode();
+    startTime = System.currentTimeMillis();
+    ((CrackerMode) mode).crackOne(c, 500000);
+    endTime   = System.currentTimeMillis();
+    totalTime = endTime - startTime;
     System.out.println(totalTime);
     
     c = new ArrayCog(1000000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
     startTime = System.currentTimeMillis();
-    mode.crack(c, 333333, 666666);
+    ((CrackerMode) mode).crack(c, 333333, 666666);
     endTime   = System.currentTimeMillis();
     totalTime = endTime - startTime;
     System.out.println(totalTime);
@@ -73,9 +80,9 @@ public class Driver {
     c = new ArrayCog(100000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
-    EnhancedMergeMode mode2 = new EnhancedMergeMode();
+    mode = new EnhancedMergeMode();
     startTime = System.currentTimeMillis();
-    mode2.amerge(c, 333333, 666666);
+    ((EnhancedMergeMode) mode).amerge(c, 333333, 666666);
     endTime   = System.currentTimeMillis();
     totalTime = endTime - startTime;
     System.out.println(totalTime);
