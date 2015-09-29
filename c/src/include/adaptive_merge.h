@@ -1,8 +1,8 @@
 #ifndef ADAPTIVE_MERGE_H_SHEILD
 #define ADAPTIVE_MERGE_H_SHEILD
 
-#define BLOCK_SIZE 100
-#define MERGE_BLOCK_SIZE 10
+#define BLOCK_SIZE 2500
+#define MERGE_BLOCK_SIZE 100
 cog *partition_cog(cog *cog);
 
 list *gather_partitions(list *list, cog *cog);

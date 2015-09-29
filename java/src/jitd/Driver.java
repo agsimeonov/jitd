@@ -58,7 +58,7 @@ public class Driver {
     long endTime;
     double totalTime;
     
-    c = new ArrayCog(10000000);
+    c = new ArrayCog(1000000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
     mode = new CrackerMode();
@@ -68,7 +68,7 @@ public class Driver {
     totalTime = ((double)endTime - startTime) / 1000000;
     System.out.println(totalTime);
     
-    c = new ArrayCog(10000000);
+    c = new ArrayCog(1000000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
     startTime = System.nanoTime();
@@ -77,7 +77,7 @@ public class Driver {
     totalTime = ((double)endTime - startTime) / 1000000;
     System.out.println(totalTime);
     
-    c = new ArrayCog(100000);
+    c = new ArrayCog(1000000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
     mode = new PushdownMergeMode();
