@@ -51,40 +51,40 @@ public class Driver {
   
   public static void main(String argList[])
   {
-    ArrayCog c = new ArrayCog(1000000);
+    ArrayCog c;
     KeyValueIterator.RandomIterator rand;
     Mode mode;
     long startTime;
     long endTime;
-    long totalTime;
+    double totalTime;
     
-    c = new ArrayCog(1000000);
+    c = new ArrayCog(10000000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
     mode = new CrackerMode();
-    startTime = System.currentTimeMillis();
+    startTime = System.nanoTime();
     ((CrackerMode) mode).crackOne(c, 500000);
-    endTime   = System.currentTimeMillis();
-    totalTime = endTime - startTime;
+    endTime   = System.nanoTime();
+    totalTime = ((double)endTime - startTime) / 1000000;
     System.out.println(totalTime);
     
-    c = new ArrayCog(1000000);
+    c = new ArrayCog(10000000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
-    startTime = System.currentTimeMillis();
+    startTime = System.nanoTime();
     ((CrackerMode) mode).crack(c, 333333, 666666);
-    endTime   = System.currentTimeMillis();
-    totalTime = endTime - startTime;
+    endTime   = System.nanoTime();
+    totalTime = ((double)endTime - startTime) / 1000000;
     System.out.println(totalTime);
     
     c = new ArrayCog(100000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
     mode = new EnhancedMergeMode();
-    startTime = System.currentTimeMillis();
+    startTime = System.nanoTime();
     ((EnhancedMergeMode) mode).amerge(c, 333333, 666666);
-    endTime   = System.currentTimeMillis();
-    totalTime = endTime - startTime;
+    endTime   = System.nanoTime();
+    totalTime = ((double)endTime - startTime) / 1000000;
     System.out.println(totalTime);
   }
 }

@@ -147,14 +147,14 @@ int main(int argc, char **argv)
   clock_t stop;
   double elapsed;
 
-  c = mk_random_array(1000000);
+  c = mk_random_array(10000000);
   start = clock();
   crack_one(c, 500000);
   stop = clock();
   elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
   printf("crack-1 in ms: %f\n", elapsed);
 
-  c = mk_random_array(1000000);
+  c = mk_random_array(10000000);
   start = clock();
   crack(c, 333333, 666666);
   stop = clock();
