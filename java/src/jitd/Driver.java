@@ -80,9 +80,9 @@ public class Driver {
     c = new ArrayCog(100000);
     rand = new KeyValueIterator.RandomIterator();
     c.load(rand);
-    mode = new EnhancedMergeMode();
+    mode = new PushdownMergeMode();
     startTime = System.nanoTime();
-    ((EnhancedMergeMode) mode).amerge(c, 333333, 666666);
+    ((PushdownMergeMode) mode).amerge(c, 333333, 666666);
     endTime   = System.nanoTime();
     totalTime = ((double)endTime - startTime) / 1000000;
     System.out.println(totalTime);
