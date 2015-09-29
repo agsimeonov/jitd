@@ -156,7 +156,7 @@ int main(int argc, char **argv)
 
   c = mk_random_array(10000000);
   start = clock();
-  crack(c, 333333, 666666);
+  crack_scan(c, 333333, 666666);
   stop = clock();
   elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
   printf("crack in ms: %f\n", elapsed);
