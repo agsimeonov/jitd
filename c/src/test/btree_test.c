@@ -131,18 +131,41 @@ void splayTest() {
   printJITD(seven, 0);
 }
 
+struct cog *timeRun(struct cog *(*function)(struct cog *, long, long),
+                    struct cog *cog,
+                    long a,
+                    long b) {
+  clock_t start = clock();
+  struct cog *out = (*function)(cog, a, b);
+  clock_t stop = clock();
+  clock_t elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
+  printf("\n\n TEST TIME %f\n", elapsed);
+  return out;
+}
+
+/**
+ * Do a given number of random reads on a cog.
+ *
+ * @param cog - the given cog
+ * @param number - number of reads t do on a cog
+ * @param range - the key range for reads
+ */
+struct cog *randomReads(struct cog *cog, long number, long range) {
+  for (long i = 0; i < number; i++) {
+    long a = rand() % range;
+    long b = rand() % range;
+    long low = a <= b ? a : b;
+    long high = a > b ? a : b;
+    cog = crack(cog, low, high);
+  }
+  return cog;
+}
+
 int main(int argc, char **argv)
 {
-  int rand_start = 42; //time(NULL)
-  srand(rand_start);
-  test1();
-  srand(rand_start);
-  test2();
-  srand(rand_start);
-  test3();
-  srand(rand_start);
-  test4();
-  srand(rand_start);
-  test5();
-  splayTest();
+  struct cog *cog;
+  cog = mk_random_array(1000000);
+  timeRun(randomReads, cog, 1000, 1000000);
+//  randomReads(cog, 1000, 1000000);
+
 }
