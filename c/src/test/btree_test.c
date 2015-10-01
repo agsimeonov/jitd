@@ -175,7 +175,19 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
 
 int main(int argc, char **argv)
 {
+//  int rand_start = 42; //time(NULL)
+//  srand(rand_start);
+//  test1();
+//  srand(rand_start);
+//  test2();
+//  srand(rand_start);
+//  test3();
+//  srand(rand_start);
+//  test4();
+//  srand(rand_start);
+//  test5();
+//  splayTest();
   struct cog *cog;
   cog = mk_random_array(1000000);
-  timeRun(randomReads, cog, 10000, 1000000);
+  timeRun(randomReads, cog, 1000, 1000000);
 }
