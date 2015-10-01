@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
+#include <sys/time.h>
 #include "cog.h"
 #include "cracker.h"
 #include "splay.h"
@@ -8,7 +8,7 @@
 #include "adaptive_merge.h"
 
 #define BUFFER_SIZE 10
-#define KEY_RANGE   1000
+#define KEY_RANGE   1000000
 
 buffer mk_random_buffer(int size)
 {
@@ -18,7 +18,7 @@ buffer mk_random_buffer(int size)
     b->data[i].key = rand() % KEY_RANGE;
     b->data[i].value = rand();
   }
-  record_dump(b->data, 0, size);
+//  record_dump(b->data, 0, size);
   return b;
 }
 
@@ -131,15 +131,26 @@ void splayTest() {
   printJITD(seven, 0);
 }
 
+/**
+ * Executes a given function and times the execution.
+ *
+ * @param function - Function to run
+ * @param cog - cog parameter for function
+ * @param a - first long parameter for function
+ * @param b - second long parameter for function
+ * @return the resulting BTree
+ */
 struct cog *timeRun(struct cog *(*function)(struct cog *, long, long),
                     struct cog *cog,
                     long a,
                     long b) {
-  clock_t start = clock();
+  struct timeval stop, start;
+  gettimeofday(&start, NULL);
   struct cog *out = (*function)(cog, a, b);
-  clock_t stop = clock();
-  clock_t elapsed = (double) (stop - start) * 1000.0 / CLOCKS_PER_SEC;
-  printf("\n\n TEST TIME %f\n", elapsed);
+  gettimeofday(&stop, NULL);
+  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
+  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
+  printf("Took %lld milliseconds\n", stopms - startms);
   return out;
 }
 
@@ -149,6 +160,7 @@ struct cog *timeRun(struct cog *(*function)(struct cog *, long, long),
  * @param cog - the given cog
  * @param number - number of reads t do on a cog
  * @param range - the key range for reads
+ * @return the resulting BTree
  */
 struct cog *randomReads(struct cog *cog, long number, long range) {
   for (long i = 0; i < number; i++) {
@@ -165,7 +177,5 @@ int main(int argc, char **argv)
 {
   struct cog *cog;
   cog = mk_random_array(1000000);
-  timeRun(randomReads, cog, 1000, 1000000);
-//  randomReads(cog, 1000, 1000000);
-
+  timeRun(randomReads, cog, 10000, 1000000);
 }
