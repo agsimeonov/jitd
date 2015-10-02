@@ -109,6 +109,77 @@ void test5() {
   free(ret);
 }
 
+/**
+ * Acquires the count of BTree nodes in a tree.
+ *
+ * @param cog - the root BTree node in the tree
+ * @return the count of BTree nodes in the tree
+ */
+long getBtreeNodeCount(struct cog *cog) {
+  struct cog *left = cog->data.btree.lhs;
+  struct cog *right = cog->data.btree.rhs;
+  long count = 1;
+
+  if (left != NULL && left->type == COG_BTREE) {
+    count += getBtreeNodeCount(left);
+  }
+
+  if (right != NULL && right->type == COG_BTREE) {
+    count += getBtreeNodeCount(right);
+  }
+
+  return count;
+}
+
+/**
+ * Creates an in-order list of BTree Nodes for a given tree. (step called during recursion).
+ *
+ * @param cog - root BTree cog
+ * @param list - the in-order list
+ * @param index - index for next cog in the list
+ * @return index for next cog in the list
+ */
+long inorderStep(struct cog *cog, struct cog **list, int index) {
+  struct cog *left = cog->data.btree.lhs;
+  struct cog *right = cog->data.btree.rhs;
+
+  if (left != NULL && left->type == COG_BTREE)
+    index = inorderStep(left, list, index);
+
+  list[index] = cog;
+  index += 1;
+
+  if (right != NULL && right->type == COG_BTREE)
+    index = inorderStep(right, list, index);
+
+  return index;
+}
+
+/**
+ * Creates an in-order list of BTree Nodes for a given tree.
+ * NOTE: the in-order list is allocated with malloc, so deallocate with free when done!
+ *
+ * @param cog - root BTree cog
+ * @return the in-order list
+ */
+struct cog **inorder(struct cog *cog) {
+  struct cog *left = cog->data.btree.lhs;
+  struct cog *right = cog->data.btree.rhs;
+  struct cog **list = malloc(getBtreeNodeCount(cog) * sizeof(struct cog *));
+  long index = 0;
+
+  if (left != NULL && left->type == COG_BTREE)
+    index = inorderStep(left, list, index);
+
+  list[index] = cog;
+  index += 1;
+
+  if (right != NULL && right->type == COG_BTREE)
+    index = inorderStep(right, list, index);
+
+  return list;
+}
+
 void splayTest() {
   printf("Splaying Test:\n");
   cog *six = make_btree(NULL, NULL, 6);
@@ -173,8 +244,7 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
   return cog;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 //  int rand_start = 42; //time(NULL)
 //  srand(rand_start);
 //  test1();
@@ -186,8 +256,8 @@ int main(int argc, char **argv)
 //  test4();
 //  srand(rand_start);
 //  test5();
-//  splayTest();
-  struct cog *cog;
-  cog = mk_random_array(1000000);
-  timeRun(randomReads, cog, 1000, 1000000);
+  splayTest();
+//  struct cog *cog;
+//  cog = mk_random_array(1000000);
+//  timeRun(randomReads, cog, 1000, 1000000);
 }
