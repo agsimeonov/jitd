@@ -109,6 +109,9 @@ void test5() {
   free(ret);
 }
 
+
+
+
 /**
  * Acquires the count of BTree nodes in a tree.
  *
@@ -179,6 +182,14 @@ struct cog **inorder(struct cog *cog) {
 
   return list;
 }
+
+struct cog* median(struct cog** array) {
+ int size = sizeof(array)/sizeof(struct cog *);
+ return array[size/2];
+
+
+}
+
 
 void splayTest() {
   printf("Splaying Test:\n");
@@ -257,7 +268,40 @@ int main(int argc, char **argv) {
 //  srand(rand_start);
 //  test5();
   splayTest();
-//  struct cog *cog;
-//  cog = mk_random_array(1000000);
-//  timeRun(randomReads, cog, 1000, 1000000);
+  struct cog *cog;
+  struct cog *m;
+  struct cog **array;
+  cog = mk_random_array(1000000);
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+//  array = inorder(cog);
+//  m = median(array);
+//  free(array);
+//  cog = splay(cog, m);
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+//  array = inorder(cog);
+//  m = median(array);
+//  free(array);
+//  cog = splay(cog, m);
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+//  array = inorder(cog);
+//  m = median(array);
+//  free(array);
+//  cog = splay(cog, m);
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+//  array = inorder(cog);
+//  m = median(array);
+//  free(array);
+//  cog = splay(cog, m);
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+//  array = inorder(cog);
+//  m = median(array);
+//  free(array);
+//  cog = splay(cog, m);
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+//  array = inorder(cog);
+//  m = median(array);
+//  free(array);
+//  cog = splay(cog, m);
+
+
 }
