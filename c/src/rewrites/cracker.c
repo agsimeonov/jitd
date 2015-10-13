@@ -153,6 +153,12 @@ cog *crack_one(cog *c, long val) {
   }
 }
 
+struct cog * found = NULL;
+
+struct cog *getFound() {
+  return found;
+}
+
 cog *crack_scan(cog *c, long low, long high) {
   if(c->type == COG_SORTEDARRAY) {
     return c;
@@ -173,6 +179,9 @@ cog *crack_scan(cog *c, long low, long high) {
         rhs = crack_one(rhs, high);
       }
     }
+
+    found = lhs;
+
     if(c->data.btree.lhs != lhs || c->data.btree.rhs != rhs) {
       long sep = c->data.btree.sep;
       free(c);
@@ -237,7 +246,7 @@ cog *crack_scan(cog *c, long low, long high) {
     cog *array1 = make_array(0, lowIdx, out);
     cog *array2 = make_array(lowIdx, midIdx - lowIdx, out);
     cog *array3 = make_array(highIdx + 1, out->size - highIdx -1, out);
-    return make_btree(array1, make_btree(array2, array3, high), low);   
+    return make_btree(array1, make_btree(array2, array3, high), low);
   } 
 }
 

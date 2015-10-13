@@ -245,19 +245,33 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
 }
 
 int main(int argc, char **argv) {
-//  int rand_start = 42; //time(NULL)
-//  srand(rand_start);
-//  test1();
-//  srand(rand_start);
-//  test2();
-//  srand(rand_start);
-//  test3();
-//  srand(rand_start);
-//  test4();
-//  srand(rand_start);
-//  test5();
-  splayTest();
-//  struct cog *cog;
-//  cog = mk_random_array(1000000);
-//  timeRun(randomReads, cog, 1000, 1000000);
+  struct cog *cog;
+  cog = mk_random_array(1000000);
+  struct timeval stop, start;
+  gettimeofday(&start, NULL);
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  cog = timeRun(randomReads, cog, 1000, 1000000);
+  cog = splay(cog, getFound());
+  gettimeofday(&stop, NULL);
+  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
+  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
+  printf("TOTAL Time %lld milliseconds\n", stopms - startms);
+
 }

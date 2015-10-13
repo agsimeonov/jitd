@@ -9,4 +9,6 @@ cog *crack_one(cog *c, long val);
 
 cog *crack(cog *c, long low, long high);
 
+cog *getFound();
+
 #endif //CRACKER_H_SHEILD
