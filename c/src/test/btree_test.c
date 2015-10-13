@@ -244,31 +244,32 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
   return cog;
 }
 
+struct cog *runSomeTests(struct cog *cog, long number, long range, int doSplay) {
+  cog = timeRun(randomReads, cog, number, range);
+  if (doSplay != 0) {
+    cog =  splay(cog, getFound());
+  }
+  return cog;
+}
+
 int main(int argc, char **argv) {
   struct cog *cog;
+  long number = 1000;
+  long range = 1000000;
+  int doSplay = 0;
   cog = mk_random_array(1000000);
   struct timeval stop, start;
   gettimeofday(&start, NULL);
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
-  cog = timeRun(randomReads, cog, 1000, 1000000);
-  cog = splay(cog, getFound());
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
+  cog = runSomeTests(cog, number, range, doSplay);
   gettimeofday(&stop, NULL);
   long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
   long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
