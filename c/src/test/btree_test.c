@@ -221,7 +221,7 @@ struct cog *timeRun(struct cog *(*function)(struct cog *, long, long),
   gettimeofday(&stop, NULL);
   long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
   long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
-  printf("Took %lld milliseconds\n", stopms - startms);
+  printf("%lld\n", stopms - startms);
   return out;
 }
 
@@ -244,10 +244,12 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
   return cog;
 }
 
-struct cog *runSomeTests(struct cog *cog, long number, long range, int doSplay) {
-  cog = timeRun(randomReads, cog, number, range);
-  if (doSplay != 0) {
-    cog =  splay(cog, getFound());
+struct cog *runSomeTests(struct cog *cog, long number, long range, int doSplay, int repeat) {
+  for (int i = 0; i < repeat; i++) {
+    cog = timeRun(randomReads, cog, number, range);
+    if (doSplay != 0) {
+      cog = splay(cog, getFound());
+    }
   }
   return cog;
 }
@@ -256,23 +258,15 @@ int main(int argc, char **argv) {
   struct cog *cog;
   long number = 1000;
   long range = 1000000;
-  int doSplay = 0;
+  int doSplay = 1;
+  int repeat = 10;
   cog = mk_random_array(1000000);
-  struct timeval stop, start;
-  gettimeofday(&start, NULL);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  cog = runSomeTests(cog, number, range, doSplay);
-  gettimeofday(&stop, NULL);
-  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
-  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
-  printf("TOTAL Time %lld milliseconds\n", stopms - startms);
+//  struct timeval stop, start;
+//  gettimeofday(&start, NULL);
+  cog = runSomeTests(cog, number, range, doSplay, repeat);
+//  gettimeofday(&stop, NULL);
+//  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
+//  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
+//  printf("%lld\n", stopms - startms);
 
 }
