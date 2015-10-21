@@ -3,6 +3,13 @@
 #include "cog.h"
 #include "data.h"
 
+/**
+ * Code to do pushdown operation on the cog.
+ * @param cog - 
+ * @param low - the lower range for the operation
+ * @param high - the higher range for the operation
+ **/
+
 cog *pushdown_concats(cog *c, long low, long high) {
   if(c->type == COG_BTREE) {
     cog *lhs = c->data.btree.lhs;
@@ -88,6 +95,11 @@ cog *pushdown_concats(cog *c, long low, long high) {
   }
 }
 
+/**
+ * Perform the crack one algorithm as described in the Cracking paper.
+ * @param cog - the given cog
+ * @param val - the partition value for cracking.
+ **/
 
 cog *crack_one(cog *c, long val) {
   if(c->type == COG_SORTEDARRAY) {
@@ -152,6 +164,15 @@ cog *crack_one(cog *c, long val) {
     return make_btree(array1, array2, val);
   }
 }
+
+
+/**
+ *Perform cracking on a particular cog.
+ *@param cog - the given cog for cracking
+ *@param low - the lower range for cog
+ *@param high - the higher range for cog
+ **/
+
 
 cog *crack_scan(cog *c, long low, long high) {
   if(c->type == COG_SORTEDARRAY) {
@@ -240,6 +261,13 @@ cog *crack_scan(cog *c, long low, long high) {
     return make_btree(array1, make_btree(array2, array3, high), low);   
   } 
 }
+
+/**
+ * Cracking implementation
+ * @param cog - the give cog
+ * @param low - the lower range for scan
+ * @param high - the higher range for scan
+ * */
 
 cog *crack(cog *c, long low, long high) {
   cog *cog;
