@@ -1,14 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <math.h>
+#include <assert.h>
+
 #include "cog.h"
 #include "cracker.h"
 #include "splay.h"
 #include "util.h"
 #include "adaptive_merge.h"
+#include "zipfian_generator.h"
 
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 100
 #define KEY_RANGE   1000000
+
+#define  FALSE          0       // Boolean false
+#define  TRUE           1       // Boolean true
 
 buffer mk_random_buffer(int size)
 {
@@ -50,6 +57,7 @@ void test_scan(cog *c, long low, long high)
 
 void test1()
 {
+  //Test for making a random array cog
   printf("test 1\n");
   cog *c = mk_random_array(BUFFER_SIZE);
   test_scan(c, 200, 700);
@@ -58,6 +66,7 @@ void test1()
 
 void test2()
 {
+  //Test for making a sorted array cog
   printf("test 2\n");
   cog *c = mk_sorted_array(BUFFER_SIZE);
   test_scan(c, 200, 700);
@@ -65,6 +74,7 @@ void test2()
 }
 void test3()
 {
+  //Test for making a concat cog and doing a scan for 
   printf("test 3\n");
   cog *c = 
     make_concat(
@@ -75,7 +85,9 @@ void test3()
   cleanup(c);
 }
 
+
 void test4() {
+
   printf("test 4\n");
   cog *c = make_concat(
             mk_random_array(BUFFER_SIZE),
@@ -89,6 +101,7 @@ void test4() {
 }
 
 void test5() {
+  //Perform the test for adaptive merge
   printf("test 5\n");
   cog *c = make_concat(
             mk_random_array(BUFFER_SIZE),
@@ -100,14 +113,17 @@ void test5() {
   iter_dump(ret->iter);
   iter_cleanup(ret->iter);
   c = ret->cog;
+  printJITD(c,0);
   free(ret);
   printf("Scan 2\n");
   ret = amerge(c, 300, 700);
   iter_dump(ret->iter);
+  printJITD(c,0);
   cleanup(ret->cog);
   iter_cleanup(ret->iter);
   free(ret);
 }
+
 
 /**
  * Acquires the count of BTree nodes in a tree.
@@ -162,7 +178,7 @@ long inorderStep(struct cog *cog, struct cog **list, int index) {
  * @param cog - root BTree cog
  * @return the in-order list
  */
-struct cog **inorder(struct cog *cog) {
+/*struct cog **inorder(struct cog *cog) {
   struct cog *left = cog->data.btree.lhs;
   struct cog *right = cog->data.btree.rhs;
   struct cog **list = malloc(getBtreeNodeCount(cog) * sizeof(struct cog *));
@@ -178,7 +194,7 @@ struct cog **inorder(struct cog *cog) {
     index = inorderStep(right, list, index);
 
   return list;
-}
+}*/
 
 void splayTest() {
   printf("Splaying Test:\n");
@@ -244,20 +260,166 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
   return cog;
 }
 
-int main(int argc, char **argv) {
-//  int rand_start = 42; //time(NULL)
-//  srand(rand_start);
-//  test1();
-//  srand(rand_start);
-//  test2();
-//  srand(rand_start);
-//  test3();
-//  srand(rand_start);
-//  test4();
-//  srand(rand_start);
-//  test5();
-  splayTest();
-//  struct cog *cog;
-//  cog = mk_random_array(1000000);
-//  timeRun(randomReads, cog, 1000, 1000000);
+
+
+/**
+ * Function to generate the zipfian reads calling the zipf function
+ * @param cog - the given cog
+ * @param number - the number of scans to be performed on the given cog
+ * @param range - the range of number to be scannned(selectivity)
+ * */
+
+struct cog *zipfianReads(struct cog *cog, long number, long range) {
+  float alpha =0.99;
+  int n=KEY_RANGE;
+  int zipf_rv;
+  rand_val(1400);
+  for (int i=1; i<number; i++)
+  {
+    zipf_rv = zipf(alpha, n);
+    crack_scan(cog,zipf_rv,zipf_rv+range);    
+    //printf("%d \n", zipf_rv);
+  }
+  return cog;
 }
+
+/**
+ *Function do an inorder traversal of the tree and return the references
+ *@param cog - the given cog
+ *@param count - tracking the index of the node being traversed right now. 
+ * */
+
+struct cog **inorder(struct cog *cog, int *count) {
+  struct cog *left = cog->data.btree.lhs;
+  struct cog *right = cog->data.btree.rhs;
+  struct cog **list = malloc(getBtreeNodeCount(cog) * sizeof(struct cog *));
+  long index = 0;
+
+  if (left != NULL && left->type == COG_BTREE)
+    index = inorderStep(left, list, index);
+
+  list[index] = cog;
+  index += 1;
+
+  if (right != NULL && right->type == COG_BTREE)
+    index = inorderStep(right, list, index);
+
+  //printf("count %d\n",index);
+  *count = index;
+  return list;
+}
+
+/**
+ * Function to get the median node for the splay operation
+ * Returns the pointer to the median node.
+ *@param cog - the root cog
+ *
+ * */
+
+struct cog * getMedianNode(struct cog * root) {
+  int count = 0;
+  int med = 0;
+  struct cog **list = inorder(root, &count);
+  if (count % 2 == 0) {
+    med = count / 2;
+  } else {
+    med = (count + 1) / 2;
+  }
+  //printf("cog %ld\n", list[med]->data.btree.sep);
+  return list[med];
+}
+
+
+/**
+ * Function to perform zipfian read with splay operation
+ *@param cog - the given cog
+ *@param number - the number of iterations
+ *@param range - the selectivity range
+ * */
+
+struct cog *zipfianReads_splay(struct cog *cog, long number, long range) {
+  float alpha =0.99;
+  int n=KEY_RANGE;
+  int zipf_rv;
+  rand_val(1400);
+  struct cog *cog_median;
+  for (int i=1; i<number; i++)
+  {
+    zipf_rv = zipf(alpha, n);
+     if(i%2==0)
+     {
+         cog_median = getMedianNode(cog);
+        
+
+    }
+
+    crack_scan(cog,zipf_rv,zipf_rv+range);
+    //if(i>100)
+      //splay(cog,cog_median);
+    //printf("%d \n", zipf_rv);
+  }
+  return cog;
+}
+
+
+
+
+
+void test6() {
+  struct cog *cog,*cog_result,*cog_median;
+  cog = mk_random_array(1000000);
+  //Cog without splaying
+  cog_result = timeRun(zipfianReads, cog, 1000, 1000);
+  //struct cog **inorder_list=inorder(struct cog *cog)
+
+  //cog_median = getMedianNode(cog_result);
+  //Cog with splaying
+
+
+  //timeRun(splayTest, cog,1000,1000000);
+  
+  //printJITD(cog_result,0);
+
+}
+
+
+void test7() {
+  struct cog *cog,*cog_result,*cog_median;
+  cog = mk_random_array(1000000);
+  //Cog without splaying
+  cog_result = timeRun(zipfianReads_splay, cog, 1000, 1000);
+  //struct cog **inorder_list=inorder(struct cog *cog)
+
+  cog_median = getMedianNode(cog_result);
+  //Cog with splaying
+
+
+  timeRun(splayTest, cog,1000,1000000);
+  
+  //printJITD(cog_result,0);
+
+}
+
+
+
+
+int main(int argc, char **argv) {
+ int rand_start = 42; //time(NULL)
+ /*srand(rand_start);
+ test1();
+ srand(rand_start);
+ test2();
+ srand(rand_start);
+ test3();
+ srand(rand_start);
+ test4();
+ srand(rand_start);
+ test5();
+ splayTest();*/
+
+  //Generate the zipfian array
+
+  test6();
+  test7();
+}
+
