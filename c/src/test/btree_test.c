@@ -8,7 +8,7 @@
 #include "adaptive_merge.h"
 
 #define BUFFER_SIZE 10
-#define KEY_RANGE   1000000
+#define KEY_RANGE   10000
 
 buffer mk_random_buffer(int size)
 {
@@ -109,20 +109,25 @@ void test5() {
   free(ret);
 }
 
+
+
 /**
  * Acquires the count of BTree nodes in a tree.
  *
  * @param cog - the root BTree node in the tree
  * @return the count of BTree nodes in the tree
  */
-long getBtreeNodeCount(struct cog *cog) {
+int getBtreeNodeCount(struct cog *cog) {
   struct cog *left = cog->data.btree.lhs;
   struct cog *right = cog->data.btree.rhs;
-  long count = 1;
+  int count = 1;
 
   if (left != NULL && left->type == COG_BTREE) {
     count += getBtreeNodeCount(left);
   }
+
+  //for printing
+  //printf("Btree cog %d count %d\n",cog->data.btree.sep,count);
 
   if (right != NULL && right->type == COG_BTREE) {
     count += getBtreeNodeCount(right);
@@ -147,7 +152,10 @@ long inorderStep(struct cog *cog, struct cog **list, int index) {
     index = inorderStep(left, list, index);
 
   list[index] = cog;
+
   index += 1;
+  //printf("list index %d\n",index);
+
 
   if (right != NULL && right->type == COG_BTREE)
     index = inorderStep(right, list, index);
@@ -162,7 +170,7 @@ long inorderStep(struct cog *cog, struct cog **list, int index) {
  * @param cog - root BTree cog
  * @return the in-order list
  */
-struct cog **inorder(struct cog *cog) {
+struct cog **inorder(struct cog *cog, int *count) {
   struct cog *left = cog->data.btree.lhs;
   struct cog *right = cog->data.btree.rhs;
   struct cog **list = malloc(getBtreeNodeCount(cog) * sizeof(struct cog *));
@@ -177,6 +185,8 @@ struct cog **inorder(struct cog *cog) {
   if (right != NULL && right->type == COG_BTREE)
     index = inorderStep(right, list, index);
 
+  //printf("count %d\n",index);
+  *count = index;
   return list;
 }
 
@@ -195,6 +205,10 @@ void splayTest() {
   cog *one = make_btree(zero, nine, 1);
   cog *twelve = make_btree(NULL, NULL, 12);
   cog *eleven = make_btree(one, twelve, 11);
+
+  int count = getBtreeNodeCount(eleven);
+  printf("total b tree cogs %d\n",count);
+
   printf("Before splay:\n");
   printJITD(eleven,0);
   printf("After splay:\n");
@@ -244,8 +258,46 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
   return cog;
 }
 
+struct cog * getMedianNode(struct cog * root) {
+  int count = 0;
+  int med = 0;
+  struct cog **list = inorder(root, &count);
+  if (count % 2 == 0) {
+    med = count / 2;
+  } else {
+    med = (count + 1) / 2;
+  }
+  return list[med];
+}
+
+void test6(int reads){
+  printf("Test JITD performance without splaying\n");
+  struct cog *cog;
+  cog = mk_random_array(1000000);
+  cog = timeRun(randomReads, cog, reads, 10000);
+  cog = timeRun(randomReads, cog, reads, 250);
+  cog = timeRun(randomReads, cog, reads, 1000);
+  cog = timeRun(randomReads, cog, reads, 5000);
+  cog = timeRun(randomReads, cog, reads, 10);
+}
+
+void test7(int reads){
+  printf("Test JITD performance with splaying\n");
+  struct cog *cog;
+  cog = mk_random_array(1000000);
+  cog = timeRun(randomReads, cog, reads, 10000);
+  splay(cog, getMedianNode(cog));
+  cog = timeRun(randomReads, cog, reads, 250);
+  splay(cog, getMedianNode(cog));
+  cog = timeRun(randomReads, cog, reads, 1000);
+  splay(cog, getMedianNode(cog));
+  cog = timeRun(randomReads, cog, reads, 5000);
+  splay(cog, getMedianNode(cog));
+  cog = timeRun(randomReads, cog, reads, 10);
+}
+
 int main(int argc, char **argv) {
-//  int rand_start = 42; //time(NULL)
+  int rand_start = 42; //time(NULL)
 //  srand(rand_start);
 //  test1();
 //  srand(rand_start);
@@ -256,8 +308,8 @@ int main(int argc, char **argv) {
 //  test4();
 //  srand(rand_start);
 //  test5();
-  splayTest();
-//  struct cog *cog;
-//  cog = mk_random_array(1000000);
-//  timeRun(randomReads, cog, 1000, 1000000);
+ // splayTest();
+  srand(rand_start);
+  test6(20);
+  //test7(10);
 }
