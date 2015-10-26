@@ -46,7 +46,11 @@ void printTreeCog(struct cog *cog) {
   }
 
   if (cog->type == COG_BTREE) {
+#ifndef __ADVANCED
     printf("≤ %ld", cog->data.btree.sep);
+#else
+    printf("≤ %ld Reads: %ld", cog->data.btree.sep, cog->data.btree.rds);
+#endif
   }
 }
 
