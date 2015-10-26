@@ -1,5 +1,8 @@
 #include "cog.h"
 
+#ifndef SPLAY_LIB_H_SHIELD
+#define SPLAY_LIB_H_SHIELD
+
 
 /**
  * The splay operation moves a given node to the root.
@@ -9,3 +12,5 @@
  * @return the new root of the rearranged tree
  */
 struct cog *splay(struct cog *root, struct cog *node);
+
+#endif
