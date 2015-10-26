@@ -29,9 +29,18 @@ long getBtreeNodeCount(struct cog *cog);
  * NOTE: the in-order list is allocated with malloc, so deallocate with free when done!
  *
  * @param cog - root BTree cog
+ * @param count - the count of BTree nodes in the tree
  * @return the in-order list
  */
-struct cog **inorder(struct cog *cog);
+struct cog **inorder(struct cog *cog, long count);
+
+/**
+ * Acquires the median BTree node in a JITD.
+ *
+ * @param root - the root node of a JITD
+ * @return the median node of a JITD
+ */
+struct cog *getMedian(struct cog *root);
 
 /**
  * Executes a given function and times the execution.

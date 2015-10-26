@@ -185,12 +185,13 @@ long inorderStep(struct cog *cog, struct cog **list, long index) {
  * NOTE: the in-order list is allocated with malloc, so deallocate with free when done!
  *
  * @param cog - root BTree cog
+ * @param count - the count of BTree nodes in the tree
  * @return the in-order list
  */
-struct cog **inorder(struct cog *cog) {
+struct cog **inorder(struct cog *cog, long count) {
   struct cog *left = cog->data.btree.lhs;
   struct cog *right = cog->data.btree.rhs;
-  struct cog **list = malloc(getBtreeNodeCount(cog) * sizeof(struct cog *));
+  struct cog **list = malloc(count * sizeof(struct cog *));
   long index = 0;
 
   if (left != NULL && left->type == COG_BTREE)
@@ -203,6 +204,20 @@ struct cog **inorder(struct cog *cog) {
     index = inorderStep(right, list, index);
 
   return list;
+}
+
+/**
+ * Acquires the median BTree node in a JITD.
+ *
+ * @param root - the root node of a JITD
+ * @return the median node of a JITD
+ */
+struct cog *getMedian(struct cog *root) {
+  long count = getBtreeNodeCount(root);
+  struct cog **list = inorder(root, count);
+  struct cog *median = list[count/2];
+  free(list);
+  return median;
 }
 
 /**
