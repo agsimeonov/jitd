@@ -164,7 +164,7 @@ long getBtreeNodeCount(struct cog *cog) {
  * @param index - index for next cog in the list
  * @return index for next cog in the list
  */
-long inorderStep(struct cog *cog, struct cog **list, int index) {
+long inorderStep(struct cog *cog, struct cog **list, long index) {
   struct cog *left = cog->data.btree.lhs;
   struct cog *right = cog->data.btree.rhs;
 
