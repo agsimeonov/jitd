@@ -51,6 +51,9 @@ cog *make_btree( struct cog *lhs, struct cog *rhs, long sep ) {
   ret->data.btree.lhs = lhs;
   ret->data.btree.rhs = rhs;
   ret->data.btree.sep = sep;
+#ifdef __ADVANCED
+  ret->data.btree.rds = 0;
+#endif
   return ret;
 }
 cog *make_array( int start, int len, buffer records ) {

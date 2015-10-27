@@ -5,11 +5,12 @@
 
 /**
  * Code to do pushdown operation on the cog.
- * @param cog - 
+ *
+ * @param cog - the given cog
  * @param low - the lower range for the operation
  * @param high - the higher range for the operation
- **/
-
+ * @return the root of the resulting tree
+ */
 cog *pushdown_concats(cog *c, long low, long high) {
   if(c->type == COG_BTREE) {
     cog *lhs = c->data.btree.lhs;
@@ -97,10 +98,11 @@ cog *pushdown_concats(cog *c, long low, long high) {
 
 /**
  * Perform the crack one algorithm as described in the Cracking paper.
+ *
  * @param cog - the given cog
  * @param val - the partition value for cracking.
- **/
-
+ * @return the root of the resulting tree
+ */
 cog *crack_one(cog *c, long val) {
   if(c->type == COG_SORTEDARRAY) {
     return c;
@@ -167,13 +169,13 @@ cog *crack_one(cog *c, long val) {
 
 
 /**
- *Perform cracking on a particular cog.
- *@param cog - the given cog for cracking
- *@param low - the lower range for cog
- *@param high - the higher range for cog
- **/
-
-
+ * Perform cracking on a particular cog.
+ *
+ * @param cog - the given cog for cracking
+ * @param low - the lower range for cog
+ * @param high - the higher range for cog
+ * @return the root of the resulting tree
+ */
 cog *crack_scan(cog *c, long low, long high) {
   if(c->type == COG_SORTEDARRAY) {
     return c;
@@ -263,12 +265,13 @@ cog *crack_scan(cog *c, long low, long high) {
 }
 
 /**
- * Cracking implementation
+ * Cracking implementation.
+ *
  * @param cog - the give cog
  * @param low - the lower range for scan
  * @param high - the higher range for scan
- * */
-
+ * @return the root of the resulting tree
+ */
 cog *crack(cog *c, long low, long high) {
   cog *cog;
   cog = pushdown_concats(c, low, high);
