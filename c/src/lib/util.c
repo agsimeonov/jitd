@@ -4,6 +4,7 @@
 
 #include "cog.h"
 #include "cracker.h"
+#include "splay.h"
 
 
 /**
@@ -265,3 +266,25 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
   }
   return cog;
 }
+
+#ifdef __HARVEST
+/**
+ * Run a test involving reads and splaying on a harvested value (last value read).
+ *
+ * @param cog - the root of the JITD
+ * @param reads - number of reads per step
+ * @param range - the key range for reads
+ * @param doSplay - boolean TRUE or FALSE, if TRUE splay after every step, otherwise just read
+ * @param steps - number of steps
+ * @return the root of the resulting JITD
+ */
+struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay, int steps) {
+  for (int i = 0; i < steps; i++) {
+    cog = timeRun(randomReads, cog, reads, range);
+    if (doSplay != FALSE) {
+      cog = splay(cog, getHarvest());
+    }
+  }
+  return cog;
+}
+#endif

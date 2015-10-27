@@ -167,6 +167,18 @@ cog *crack_one(cog *c, long val) {
   }
 }
 
+#ifdef __HARVEST
+struct cog *harvest = NULL;
+
+/**
+ * Acquires the last BTree cog that was read from in crack_scan().
+ *
+ * @return the last BTree cog that was read from in crack_scan().
+ */
+struct cog *getHarvest() {
+  return harvest;
+}
+#endif
 
 /**
  * Perform cracking on a particular cog.
@@ -196,6 +208,11 @@ cog *crack_scan(cog *c, long low, long high) {
         rhs = crack_one(rhs, high);
       }
     }
+
+#ifdef __HARVEST
+    harvest = lhs;
+#endif
+
     if(c->data.btree.lhs != lhs || c->data.btree.rhs != rhs) {
       long sep = c->data.btree.sep;
       free(c);

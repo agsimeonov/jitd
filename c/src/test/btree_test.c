@@ -250,4 +250,14 @@ int main(int argc, char **argv) {
 //  timeRun(randomReads, cog, 1000, 1000000);
 //  test8();
 //  test9();
+
+#ifdef __HARVEST
+  struct cog *harvestTestCog;
+  long reads   = 1000;
+  long range   = 1000000;
+  int  doSplay = TRUE;
+  int  steps  = 10;
+  harvestTestCog = mk_random_array(range);
+  harvestTestCog = splayOnHarvest(harvestTestCog, reads, range, doSplay, steps);
+#endif
 }

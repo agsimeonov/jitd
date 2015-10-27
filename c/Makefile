@@ -10,6 +10,7 @@ FILES = \
 
 CC = gcc -std=c11 -Isrc/include -g -lm
 advanced: CC = gcc -D__ADVANCED -std=c11 -Isrc/include -g -lm
+harvest: CC = gcc -D__HARVEST -std=c11 -Isrc/include -g -lm
 
 test: $(TARGETS)
 	@for i in $(TARGETS); do echo ====== Testing $$i ======; ./$$i; done
@@ -25,8 +26,10 @@ $(TARGETS) : % : $(patsubst %, %.o, $(FILES)) src/test/%_test.c
 
 advanced: test
 
+harvest: test
+
 clean:
 	rm -f $(patsubst %, %.o, $(FILES))
 	rm -rf *.{dSYM,o}
 
-.PHONY: test advanced clean
+.PHONY: test advanced harvest clean

@@ -66,4 +66,18 @@ struct cog *timeRun(struct cog *(*function)(struct cog *, long, long),
  */
 struct cog *randomReads(struct cog *cog, long number, long range);
 
+#ifdef __HARVEST
+/**
+ * Run a test involving reads and splaying on a harvested value (last value read).
+ *
+ * @param cog - the root of the JITD
+ * @param reads - number of reads per step
+ * @param range - the key range for reads
+ * @param doSplay - boolean TRUE or FALSE, if TRUE splay after every step, otherwise just read
+ * @param steps - number of steps
+ * @return the root of the resulting JITD
+ */
+struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay, int steps);
+#endif
+
 #endif
