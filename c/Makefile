@@ -9,6 +9,7 @@ FILES = \
 
 
 CC = gcc -std=c11 -Isrc/include -g
+advanced: CC = gcc -D__ADVANCED -std=c11 -Isrc/include -g
 
 test: $(TARGETS)
 	@for i in $(TARGETS); do echo ====== Testing $$i ======; ./$$i; done
@@ -22,8 +23,10 @@ $(TARGETS) : % : $(patsubst %, %.o, $(FILES)) src/test/%_test.c
 %.o : %.c
 	$(CC) -c -o $@ $<
 
+advanced: test
+
 clean:
 	rm -f $(patsubst %, %.o, $(FILES))
 	rm -rf *.{dSYM,o}
 
-.PHONY: test clean
+.PHONY: test advanced clean

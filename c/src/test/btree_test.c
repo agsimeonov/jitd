@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
 #include "cog.h"
 #include "cracker.h"
 #include "splay.h"
@@ -8,7 +7,7 @@
 #include "adaptive_merge.h"
 
 #define BUFFER_SIZE 10
-#define KEY_RANGE   10000
+#define KEY_RANGE   1000000
 
 buffer mk_random_buffer(int size)
 {
@@ -109,87 +108,6 @@ void test5() {
   free(ret);
 }
 
-
-
-/**
- * Acquires the count of BTree nodes in a tree.
- *
- * @param cog - the root BTree node in the tree
- * @return the count of BTree nodes in the tree
- */
-int getBtreeNodeCount(struct cog *cog) {
-  struct cog *left = cog->data.btree.lhs;
-  struct cog *right = cog->data.btree.rhs;
-  int count = 1;
-
-  if (left != NULL && left->type == COG_BTREE) {
-    count += getBtreeNodeCount(left);
-  }
-
-  //for printing
-  //printf("Btree cog %d count %d\n",cog->data.btree.sep,count);
-
-  if (right != NULL && right->type == COG_BTREE) {
-    count += getBtreeNodeCount(right);
-  }
-
-  return count;
-}
-
-/**
- * Creates an in-order list of BTree Nodes for a given tree. (step called during recursion).
- *
- * @param cog - root BTree cog
- * @param list - the in-order list
- * @param index - index for next cog in the list
- * @return index for next cog in the list
- */
-long inorderStep(struct cog *cog, struct cog **list, int index) {
-  struct cog *left = cog->data.btree.lhs;
-  struct cog *right = cog->data.btree.rhs;
-
-  if (left != NULL && left->type == COG_BTREE)
-    index = inorderStep(left, list, index);
-
-  list[index] = cog;
-
-  index += 1;
-  //printf("list index %d\n",index);
-
-
-  if (right != NULL && right->type == COG_BTREE)
-    index = inorderStep(right, list, index);
-
-  return index;
-}
-
-/**
- * Creates an in-order list of BTree Nodes for a given tree.
- * NOTE: the in-order list is allocated with malloc, so deallocate with free when done!
- *
- * @param cog - root BTree cog
- * @return the in-order list
- */
-struct cog **inorder(struct cog *cog, int *count) {
-  struct cog *left = cog->data.btree.lhs;
-  struct cog *right = cog->data.btree.rhs;
-  struct cog **list = malloc(getBtreeNodeCount(cog) * sizeof(struct cog *));
-  long index = 0;
-
-  if (left != NULL && left->type == COG_BTREE)
-    index = inorderStep(left, list, index);
-
-  list[index] = cog;
-  index += 1;
-
-  if (right != NULL && right->type == COG_BTREE)
-    index = inorderStep(right, list, index);
-
-  //printf("count %d\n",index);
-  *count = index;
-  return list;
-}
-
 void splayTest() {
   printf("Splaying Test:\n");
   cog *six = make_btree(NULL, NULL, 6);
@@ -205,69 +123,11 @@ void splayTest() {
   cog *one = make_btree(zero, nine, 1);
   cog *twelve = make_btree(NULL, NULL, 12);
   cog *eleven = make_btree(one, twelve, 11);
-
-  int count = getBtreeNodeCount(eleven);
-  printf("total b tree cogs %d\n",count);
-
   printf("Before splay:\n");
   printJITD(eleven,0);
   printf("After splay:\n");
   splay(eleven, seven);
   printJITD(seven, 0);
-}
-
-/**
- * Executes a given function and times the execution.
- *
- * @param function - Function to run
- * @param cog - cog parameter for function
- * @param a - first long parameter for function
- * @param b - second long parameter for function
- * @return the resulting BTree
- */
-struct cog *timeRun(struct cog *(*function)(struct cog *, long, long),
-                    struct cog *cog,
-                    long a,
-                    long b) {
-  struct timeval stop, start;
-  gettimeofday(&start, NULL);
-  struct cog *out = (*function)(cog, a, b);
-  gettimeofday(&stop, NULL);
-  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
-  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
-  printf("Took %lld milliseconds\n", stopms - startms);
-  return out;
-}
-
-/**
- * Do a given number of random reads on a cog.
- *
- * @param cog - the given cog
- * @param number - number of reads t do on a cog
- * @param range - the key range for reads
- * @return the resulting BTree
- */
-struct cog *randomReads(struct cog *cog, long number, long range) {
-  for (long i = 0; i < number; i++) {
-    long a = rand() % range;
-    long b = rand() % range;
-    long low = a <= b ? a : b;
-    long high = a > b ? a : b;
-    cog = crack(cog, low, high);
-  }
-  return cog;
-}
-
-struct cog * getMedianNode(struct cog * root) {
-  int count = 0;
-  int med = 0;
-  struct cog **list = inorder(root, &count);
-  if (count % 2 == 0) {
-    med = count / 2;
-  } else {
-    med = (count + 1) / 2;
-  }
-  return list[med];
 }
 
 void test6(int reads){
@@ -297,7 +157,7 @@ void test7(int reads){
 }
 
 int main(int argc, char **argv) {
-  int rand_start = 42; //time(NULL)
+//  int rand_start = 42; //time(NULL)
 //  srand(rand_start);
 //  test1();
 //  srand(rand_start);
@@ -308,8 +168,11 @@ int main(int argc, char **argv) {
 //  test4();
 //  srand(rand_start);
 //  test5();
- // splayTest();
-  srand(rand_start);
-  test6(20);
-  //test7(10);
+  splayTest();
+//  srand(rand_start);
+//  test6(20);
+//  test7(10);
+//  struct cog *cog;
+//  cog = mk_random_array(1000000);
+//  timeRun(randomReads, cog, 1000, 1000000);
 }
