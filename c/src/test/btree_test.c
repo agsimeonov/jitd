@@ -242,6 +242,9 @@ void readsCounterTest() {
 
   struct cog *cog = make_array(0, size, b);
   cog = crack(cog, 25, 75);
+  cog = crack(cog, 75, 85);
+  cog = crack(cog, 15, 25);
+  cog = crack(cog, 65, 75);
   printJITD(cog, 0);
 }
 #endif

@@ -275,7 +275,7 @@ cog *crack_scan(cog *c, long low, long high) {
 #ifndef __ADVANCED
     return make_btree(array1, make_btree(array2, array3, high), low);
 #else
-    return makeBtreeWithReads(array1, makeBtreeWithReads(array2, array3, high, 1), low, 1);
+    return makeBtreeWithReads(array1, makeBtreeWithReads(array2, array3, high, 1), low, 2);
 #endif
   } else {
     buffer out = buffer_alloc(cog_length(c) + 1);
@@ -310,7 +310,7 @@ cog *crack_scan(cog *c, long low, long high) {
 #ifndef __ADVANCED
     return make_btree(array1, make_btree(array2, array3, high), low);
 #else
-    return makeBtreeWithReads(array1, makeBtreeWithReads(array2, array3, high, 1), low, 1);
+    return makeBtreeWithReads(array1, makeBtreeWithReads(array2, array3, high, 1), low, 2);
 #endif
   } 
 }
