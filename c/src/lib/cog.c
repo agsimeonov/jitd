@@ -378,3 +378,23 @@ cog *fold(stack_triple **stack) {
   return c;
 }
 
+#ifdef __ADVANCED
+/**
+ * Creates a BTree and also sets the reads to a predefined value.
+ *
+ * @param lhs - left side cog of the BTree
+ * @param rhs - right side cog of the BTree
+ * @param sep - separator value
+ * @param rds - predefined number of reads
+ * @return the newly created BTree cog
+ */
+cog *makeBtreeWithReads(struct cog *lhs, struct cog *rhs, long sep, long rds) {
+  cog *ret = malloc(sizeof(struct cog));
+  ret->type = COG_BTREE;
+  ret->data.btree.lhs = lhs;
+  ret->data.btree.rhs = rhs;
+  ret->data.btree.sep = sep;
+  ret->data.btree.rds = rds;
+  return ret;
+}
+#endif

@@ -104,4 +104,18 @@ void fold_append(stack_triple **stack, struct cog *c, long key);
 cog *fold(stack_triple **stack);
 
 int get_length(list *l);
+
+#ifdef __ADVANCED
+/**
+ * Creates a BTree and also sets the reads to a predefined value.
+ *
+ * @param lhs - left side cog of the BTree
+ * @param rhs - right side cog of the BTree
+ * @param sep - separator value
+ * @param rds - predefined number of reads
+ * @return the newly created BTree cog
+ */
+cog *makeBtreeWithReads(struct cog *lhs, struct cog *rhs, long sep, long rds);
+#endif
+
 #endif //BTREE_H_SHIELD

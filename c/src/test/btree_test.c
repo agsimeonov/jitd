@@ -229,6 +229,23 @@ void test9() {
 //  printJITD(cog_result, 0);
 }
 
+#ifdef __ADVANCED
+/** A simple test that makes sure read counters are properly incremented when upon cracking. */
+void readsCounterTest() {
+  int size = 100;
+  buffer b = buffer_alloc(size);
+
+  for(int i = 0; i < size; i++){
+    b->data[i].key = rand() % 100;
+    b->data[i].value = rand();
+  }
+
+  struct cog *cog = make_array(0, size, b);
+  cog = crack(cog, 25, 75);
+  printJITD(cog, 0);
+}
+#endif
+
 int main(int argc, char **argv) {
 //  int rand_start = 42; //time(NULL)
 //  srand(rand_start);
@@ -241,7 +258,7 @@ int main(int argc, char **argv) {
 //  test4();
 //  srand(rand_start);
 //  test5();
-  splayTest();
+//  splayTest();
 //  srand(rand_start);
 //  test6(20);
 //  test7(10);
@@ -250,6 +267,10 @@ int main(int argc, char **argv) {
 //  timeRun(randomReads, cog, 1000, 1000000);
 //  test8();
 //  test9();
+
+#ifdef __ADVANCED
+  readsCounterTest();
+#endif
 
 #ifdef __HARVEST
   struct cog *harvestTestCog;
