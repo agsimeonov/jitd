@@ -83,9 +83,10 @@ double rand_val(int seed) {
  * Acquires the harmonic number at n.
  *
  * @param n - a number from 1 to infinity
+ * @param alpha - zipfian rate of decay (exponent)
  * @return the n-th harmonic number
  */
-double harmonic(int n) {
+double harmonic(int n, double alpha) {
   // TODO: Razieh
   return 0.0;
 }
@@ -96,11 +97,12 @@ double harmonic(int n) {
  * count = e^((CDF * harmonic number at n) - Euler's Constant) - .5
  *
  * @param n - number of elements in the Zipfian distribution
+ * @param alpha - zipfian rate of decay (exponent)
  * @param cdf - target Zipfian CDF (between 0 and 1)
  * @return number of elements at the target CDF for the given size Zipfian distribution
  */
-long getZipfCountAtCDF(long n, float cdf) {
-  // TODO: Archana
+long getZipfCountAtCDF(long n, double alpha, float cdf) {
+  // TODO: Razieh/Archana
   return 0;
 }
 
