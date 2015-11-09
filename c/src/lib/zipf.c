@@ -102,7 +102,7 @@ double harmonic(int n, double alpha) {
  * @return number of elements at the target CDF for the given size Zipfian distribution
  */
 long getZipfCountAtCDF(long n, double alpha, float cdf) {
-  // TODO: Razieh/Archana
+  // TODO: Razieh/Aurijoy
   return 0;
 }
 
