@@ -42,13 +42,21 @@ void initPolicyInterval(long interval, long low, long high);
 /**
  * Acquires the current interval for running the policy.  This interval is self adjusting.
  * Based on the initialized thresholds it will either increase or decrease.
- * (For now we can dounle/half the interval however we should consider smarter ways to adjust it
+ * (For now we can double/half the interval however we should consider smarter ways to adjust it
  * one of the suggested approaches is looking at Huffman trees as their operations could somehow
  * help us figure out an interesting (smarter) way to do this).
  *
  * @return the next interval
  */
 long getCurrentInterval();
+
+/**
+ * Updates the policy interval.
+ *
+ * @param - the policy interval
+ */
+void updatePolicyInterval(long interval);
+
 #endif
 
 #endif
