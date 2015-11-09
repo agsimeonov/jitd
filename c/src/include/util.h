@@ -1,7 +1,7 @@
-#include "cog.h"
-
 #ifndef UTIL_LIB_H_SHIELD
 #define UTIL_LIB_H_SHIELD
+
+#include "cog.h"
 
 
 /**

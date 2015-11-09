@@ -7,6 +7,7 @@
 #include "util.h"
 #include "adaptive_merge.h"
 #include "zipf.h"
+#include "policy.h"
 
 #define BUFFER_SIZE 10
 #define KEY_RANGE   1000000
@@ -273,6 +274,10 @@ int main(int argc, char **argv) {
 
 #ifdef __ADVANCED
   readsCounterTest();
+  // TODO: Alok - please create tests to comprehensively showcase that your work is correct - test every case
+  // TODO: Archana - please create tests to comprehensively showcase that your work is correct - test every case
+  // TODO: Aurijoy - please create tests to comprehensively showcase that your work is correct - test every case
+  // TODO: Razieh - please create tests to comprehensively showcase that your work is correct - test every case
 #endif
 
 #ifdef __HARVEST

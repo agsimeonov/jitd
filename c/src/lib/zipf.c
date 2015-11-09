@@ -78,3 +78,39 @@ double rand_val(int seed) {
 
   return((double) x / m);
 }
+
+/**
+ * Acquires the harmonic number at n.
+ *
+ * @param n - a number from 1 to infinity
+ * @return the n-th harmonic number
+ */
+double harmonic(int n) {
+  // TODO: Razieh
+  return 0.0;
+}
+
+/**
+ * Acquires the number of elements in a Zipfian distribution of size N at a target Zipfian CDF.
+ * This number is symbolized by the following formula:
+ * count = e^((CDF * harmonic number at n) - Euler's Constant) - .5
+ *
+ * @param n - number of elements in the Zipfian distribution
+ * @param cdf - target Zipfian CDF (between 0 and 1)
+ * @return number of elements at the target CDF for the given size Zipfian distribution
+ */
+long getZipfCountAtCDF(long n, float cdf) {
+  // TODO: Archana
+  return 0;
+}
+
+/**
+ * Acquires the number of levels in a binary search tree for a given number of elements.
+ *
+ * @param elements - given number of elements
+ * @return number of level in a binary search tree
+ */
+long getNumberOfLevels(long elements) {
+  // TODO: Archana
+  return 0;
+}

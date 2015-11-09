@@ -1,7 +1,7 @@
-#include "cog.h"
-
 #ifndef SPLAY_LIB_H_SHIELD
 #define SPLAY_LIB_H_SHIELD
+
+#include "cog.h"
 
 
 /**

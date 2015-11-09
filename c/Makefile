@@ -1,7 +1,7 @@
 
 
 TARGETS = btree
-LIB_FILES = cog data util splay zipf
+LIB_FILES = cog data util splay zipf policy
 REWRITE_FILES = adaptive_merge cracker
 FILES = \
   $(patsubst %, src/lib/%, $(LIB_FILES))\

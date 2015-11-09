@@ -13,6 +13,9 @@
 struct cog *zig(struct cog *root, struct cog *node) {
   root->data.btree.lhs = node->data.btree.rhs;
   node->data.btree.rhs = root;
+#ifdef __ADVANCED
+  // TODO: Aurijoy
+#endif
   return node;
 }
 
@@ -26,6 +29,9 @@ struct cog *zig(struct cog *root, struct cog *node) {
 struct cog *zag(struct cog *root, struct cog *node) {
   root->data.btree.rhs = node->data.btree.lhs;
   node->data.btree.lhs = root;
+#ifdef __ADVANCED
+  // TODO: Aurijoy
+#endif
   return node;
 }
 
@@ -42,6 +48,9 @@ struct cog *zigzig(struct cog *root, struct cog *node) {
   parent->data.btree.lhs = node->data.btree.rhs;
   parent->data.btree.rhs = root;
   node->data.btree.rhs = parent;
+#ifdef __ADVANCED
+  // TODO: Aurijoy
+#endif
   return node;
 }
 
@@ -58,6 +67,9 @@ struct cog *zagzag(struct cog *root, struct cog *node) {
   parent->data.btree.rhs = node->data.btree.lhs;
   parent->data.btree.lhs = root;
   node->data.btree.lhs = parent;
+#ifdef __ADVANCED
+  // TODO: Aurijoy
+#endif
   return node;
 }
 
@@ -74,6 +86,9 @@ struct cog *zigzag(struct cog *root, struct cog *node) {
   parent->data.btree.rhs = node->data.btree.lhs;
   node->data.btree.lhs = parent;
   node->data.btree.rhs = root;
+#ifdef __ADVANCED
+  // TODO: Aurijoy
+#endif
   return node;
 }
 
@@ -90,6 +105,9 @@ struct cog *zagzig(struct cog *root, struct cog *node) {
   parent->data.btree.lhs = node->data.btree.rhs;
   node->data.btree.rhs = parent;
   node->data.btree.lhs = root;
+#ifdef __ADVANCED
+  // TODO: Aurijoy
+#endif
   return node;
 }
 
