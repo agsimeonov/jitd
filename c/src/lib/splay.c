@@ -11,11 +11,11 @@
  * @return the new root of the rearranged tree
  */
 struct cog *zig(struct cog *root, struct cog *node) {
+#ifdef __ADVANCED
+  // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+#endif
   root->data.btree.lhs = node->data.btree.rhs;
   node->data.btree.rhs = root;
-#ifdef __ADVANCED
-  // TODO: Aurijoy
-#endif
   return node;
 }
 
@@ -27,11 +27,11 @@ struct cog *zig(struct cog *root, struct cog *node) {
  * @return the new root of the rearranged tree
  */
 struct cog *zag(struct cog *root, struct cog *node) {
+#ifdef __ADVANCED
+  // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+#endif
   root->data.btree.rhs = node->data.btree.lhs;
   node->data.btree.lhs = root;
-#ifdef __ADVANCED
-  // TODO: Aurijoy
-#endif
   return node;
 }
 
@@ -44,13 +44,13 @@ struct cog *zag(struct cog *root, struct cog *node) {
  */
 struct cog *zigzig(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.lhs;
+#ifdef __ADVANCED
+  // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+#endif
   root->data.btree.lhs = parent->data.btree.rhs;
   parent->data.btree.lhs = node->data.btree.rhs;
   parent->data.btree.rhs = root;
   node->data.btree.rhs = parent;
-#ifdef __ADVANCED
-  // TODO: Aurijoy
-#endif
   return node;
 }
 
@@ -63,13 +63,13 @@ struct cog *zigzig(struct cog *root, struct cog *node) {
  */
 struct cog *zagzag(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.rhs;
+#ifdef __ADVANCED
+  // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+#endif
   root->data.btree.rhs = parent->data.btree.lhs;
   parent->data.btree.rhs = node->data.btree.lhs;
   parent->data.btree.lhs = root;
   node->data.btree.lhs = parent;
-#ifdef __ADVANCED
-  // TODO: Aurijoy
-#endif
   return node;
 }
 
@@ -82,13 +82,13 @@ struct cog *zagzag(struct cog *root, struct cog *node) {
  */
 struct cog *zigzag(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.lhs;
+#ifdef __ADVANCED
+  // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+#endif
   root->data.btree.lhs = node->data.btree.rhs;
   parent->data.btree.rhs = node->data.btree.lhs;
   node->data.btree.lhs = parent;
   node->data.btree.rhs = root;
-#ifdef __ADVANCED
-  // TODO: Aurijoy
-#endif
   return node;
 }
 
@@ -101,13 +101,13 @@ struct cog *zigzag(struct cog *root, struct cog *node) {
  */
 struct cog *zagzig(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.rhs;
+#ifdef __ADVANCED
+  // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+#endif
   root->data.btree.rhs = node->data.btree.lhs;
   parent->data.btree.lhs = node->data.btree.rhs;
   node->data.btree.rhs = parent;
   node->data.btree.lhs = root;
-#ifdef __ADVANCED
-  // TODO: Aurijoy
-#endif
   return node;
 }
 
