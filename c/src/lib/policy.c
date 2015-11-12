@@ -1,5 +1,5 @@
 #include "cog.h"
-
+#include <stdlib.h>
 
 #ifdef __ADVANCED
 /**
@@ -24,7 +24,19 @@ struct zipcog *zipfinize(struct cog *cog, long levels) {
  * @return root of the given tree
  */
 struct cog *decay(struct cog *cog, long factor) {
+
   // TODO: Archana
+	struct cog *left = cog->data.btree.lhs;
+	struct cog *right = cog->data.btree.rhs;
+
+	cog->data.btree.rds/=factor;
+
+	if (left != NULL && left->type == COG_BTREE)
+		decay(left, factor);
+
+	if (right != NULL && right->type == COG_BTREE)
+		decay(right, factor);
+  
   return 0;
 }
 
@@ -61,4 +73,5 @@ long getCurrentInterval() {
 void updatePolicyInterval(long interval) {
   // TODO: Alok/Archana
 }
+
 #endif
