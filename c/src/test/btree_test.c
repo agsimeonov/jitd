@@ -274,10 +274,16 @@ int main(int argc, char **argv) {
 
 #ifdef __ADVANCED
   readsCounterTest();
-  // TODO: Alok - please create tests to comprehensively showcase that your work is correct - test every case
-  // TODO: Archana - please create tests to comprehensively showcase that your work is correct - test every case
-  // TODO: Aurijoy - please create tests to comprehensively showcase that your work is correct - test every case
-  // TODO: Razieh - please create tests to comprehensively showcase that your work is correct - test every case
+  // TODO: Alok - please create tests to comprehensively show case that your work is correct - test every case
+  // TODO: Archana - please create tests to comprehensively show case that your work is correct - test every case
+  // TODO: Aurijoy - please create tests to comprehensively show case that your work is correct - test every case
+  // TODO: Razieh - please create tests to comprehensively show case that your work is correct - test every case
+
+
+  printf( "%lf\n",harmonic(2,1));
+  printf("%lu\n", getZipfCountAtCDF(100000,1,0.50));
+
+  printf("%lu\n",getNumberOfLevels(236));
 #endif
 
 #ifdef __HARVEST
