@@ -11,6 +11,15 @@ typedef struct zipcog {
 } zipcog;
 
 /**
+ * Return the cog with the highest read
+ * @param cog - root of the tree
+ * @return the cog with the max read
+ *
+ * */
+cog *read_max( struct cog *cog);
+
+
+/**
  * Moves up nodes into the given number of levels so that the resulting tree has close to a
  * Zipfian distribution for the given levels based on the number of reads.
  *
@@ -56,6 +65,15 @@ long getCurrentInterval();
  * @param - the policy interval
  */
 void updatePolicyInterval(long interval);
+
+
+/**
+ *Do an inorder traversal and print the cogs line by line
+ *
+ *
+ **/
+
+ void inOrderTraversal(struct cog *cog);
 
 #endif
 

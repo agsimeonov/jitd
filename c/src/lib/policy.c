@@ -2,6 +2,13 @@
 #include <stdlib.h>
 
 #ifdef __ADVANCED
+
+typedef enum {
+	  LEFT, CURRENT, RIGHT
+} ret_cog;
+
+
+
 /**
  * Moves up nodes into the given number of levels so that the resulting tree has close to a
  * Zipfian distribution for the given levels based on the number of reads.
@@ -12,8 +19,65 @@
  */
 struct zipcog *zipfinize(struct cog *cog, long levels) {
   // TODO: Alok
+
   return 0;
 }
+
+/**
+ * Return the cog with the highest read
+ * @param cog - root of the tree
+ * @return the cog with the max read
+ *
+ * */
+cog *read_max( struct cog *cog){
+	
+	long original_rdc,left_rdc,right_rdc;
+
+	if(cog->type ==COG_BTREE)
+	{
+	struct cog *left = cog->data.btree.lhs;
+	struct cog *right = cog->data.btree.rhs;
+
+	if(left!=NULL && left->type == COG_BTREE)
+		left_rdc = left->data.btree.rds;
+	else
+		left_rdc = 0;
+
+	if(right!=NULL && right->type == COG_BTREE)
+		right_rdc = right->data.btree.rds;
+	else
+		right_rdc = 0;
+
+	ret_cog type;
+	
+	
+	original_rdc = cog->data.btree.rds-(left_rdc +right_rdc );
+
+	if(left>=right)
+		type = LEFT;
+	else
+		type = RIGHT;
+
+
+	if((original_rdc>left_rdc) && (original_rdc>right_rdc))
+	{
+		return cog;
+
+	}
+	else
+	{
+
+		if(type==LEFT)
+			return(read_max(left));
+		else
+			return(read_max(right));
+	}
+	}
+	else 
+		return NULL;
+
+}
+
 
 /**
  * Decays the tree by the given factor. For example, if the factor is x the read count for every
@@ -73,5 +137,11 @@ long getCurrentInterval() {
 void updatePolicyInterval(long interval) {
   // TODO: Alok/Archana
 }
+
+/**
+ * Updates the policy interval.
+ *
+ * @param - the policy interval
+ */
 
 #endif
