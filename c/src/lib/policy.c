@@ -33,6 +33,7 @@ cog *read_max( struct cog *cog){
 	
 	long original_rdc,left_rdc,right_rdc;
 
+
 	if(cog->type ==COG_BTREE)
 	{
 	struct cog *left = cog->data.btree.lhs;
@@ -50,10 +51,11 @@ cog *read_max( struct cog *cog){
 
 	ret_cog type;
 	
-	
+	//printf("Read count is %ld\n",cog->data.btree.rds );	
 	original_rdc = cog->data.btree.rds-(left_rdc +right_rdc );
+	//printf("Root read count is %ld\n",original_rdc );
 
-	if(left>=right)
+	if(left_rdc>=right_rdc)
 		type = LEFT;
 	else
 		type = RIGHT;
