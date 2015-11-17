@@ -80,4 +80,24 @@ struct cog *randomReads(struct cog *cog, long number, long range);
 struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay, int steps);
 #endif
 
+#ifdef __ADVANCED
+long *random_array(long number,long range);
+
+struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr) ;
+
+struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr) ;
+
+struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long *),
+                    struct cog *cog,
+                    long a,
+                    long b,
+                    long *arr) ;
+
+long *zipfian_array(long number,long range);
+
+struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr);
+struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr) ;
+
+#endif
+
 #endif

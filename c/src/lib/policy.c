@@ -8,20 +8,9 @@ typedef enum {
 } ret_cog;
 
 
+long Splay_interval;
 
-/**
- * Moves up nodes into the given number of levels so that the resulting tree has close to a
- * Zipfian distribution for the given levels based on the number of reads.
- *
- * @param cog - root of the tree
- * @param levels - given number of levels
- * @return the new root of the tree and the number of nodes that were moved
- */
-struct zipcog *zipfinize(struct cog *cog, long levels) {
-  // TODO: Alok
 
-  return 0;
-}
 
 /**
  * Return the cog with the highest read
@@ -77,7 +66,37 @@ cog *read_max( struct cog *cog){
 	}
 	else 
 		return NULL;
+}
 
+/**
+ * Moves up nodes into the given number of levels so that the resulting tree has close to a
+ * Zipfian distribution for the given levels based on the number of reads.
+ *
+ * @param cog - root of the tree
+ * @param levels - given number of levels
+ * @return the new root of the tree and the number of nodes that were moved
+ */
+struct zipcog *zipfinize(struct cog *cog, long levels) {
+  // TODO: Alok
+
+	//cog_max_read = read_max(root);
+        //printf("Read max count is : %ld\n", cog_max_read->data.btree.rds);
+    //splay(cog, cog_max_read);
+    struct cog *cog_max_read, *cog_left, *cog_right;
+
+    if(levels==0)
+    	return 0;
+    else{
+
+    	cog_max_read = read_max(cog);
+        splay(cog, cog_max_read);
+        cog_left = cog->data.btree.lhs;
+        cog_right = cog->data.btree.rhs;
+        zipfinize(cog_left,levels--);
+        zipfinize(cog_right,levels--);
+    }  
+
+  return 0;
 }
 
 
@@ -115,6 +134,7 @@ struct cog *decay(struct cog *cog, long factor) {
  */
 void initPolicyInterval(long interval, long low, long high) {
   // TODO: Alok/Archana
+	
 }
 
 /**

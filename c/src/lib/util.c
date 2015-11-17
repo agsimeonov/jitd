@@ -5,6 +5,9 @@
 #include "cog.h"
 #include "cracker.h"
 #include "splay.h"
+#include "zipf.h"
+#include "splay.h"
+#include "policy.h"
 
 
 /**
@@ -287,4 +290,129 @@ struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay,
   }
   return cog;
 }
+#endif
+
+#ifdef __ADVANCED
+/**
+ * Run a test involving reads and splaying on a harvested value (last value read).
+ *
+ * @param number - count of the number of random reads
+ * @param range - the key range for reads
+ * @param doSplay - boolean TRUE or FALSE, if TRUE splay after every step, otherwise just read
+ * @param steps - number of steps
+ * @return the array for the random reads
+ */
+long *random_array(long number,long range) {
+  long *arr = malloc(number * sizeof(long));
+  for (long i = 0; i < number; i++) {
+    long a = rand() % range;    
+    //cog = crack(cog, low, high);
+    *(arr+i)=a;
+    //printf("Value is %ld\n",a );
+  }
+  return arr;
+}
+
+long *zipfian_array(long number,long range) {
+  float alpha = 0.99;
+  long *arr = malloc(number * sizeof(long));
+
+  int n = range;
+  int zipf_rv;
+  rand_val(1400);
+  struct cog *cog_median;
+
+  for (int i=0; i<number; i++) {
+    zipf_rv = zipf(alpha, n);
+
+    //cog = crack(cog, low, high);
+    *(arr+i)=zipf_rv;
+    //printf("Value is %ld\n",zipf_rv );
+  }
+  return arr;
+}
+
+struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr) {
+  struct cog *cog_max_read;
+  long low;  
+  for (int i=0; i<number; i++) {
+    low = arr[i];
+    crack_scan(cog,low,low+range);
+    if(i%200==0) 
+      {
+        cog_max_read = read_max(cog);
+        splay(cog, cog_max_read);
+      }
+//crack_scan(cog, zipf_rv, zipf_rv + range);
+//    if(i > 100) splay(cog, cog_median);
+//    printf("%d \n", zipf_rv);
+  }
+
+  return cog;
+}
+
+
+struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr) {
+  struct cog *cog_max_read;
+  long low;  
+  for (int i=0; i<number; i++) {
+    low = arr[i];
+    crack_scan(cog,low,low+range);    
+//crack_scan(cog, zipf_rv, zipf_rv + range);
+//    if(i > 100) splay(cog, cog_median);
+//    printf("%d \n", zipf_rv);
+  }
+
+  return cog;
+}
+
+
+
+struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr) {
+  long low;
+  printf("Read count is %ld\n",number);
+  for (long i = 0; i < number; i++) {
+    
+    low = arr[i];
+    crack_scan(cog,low,low+range);
+
+  }
+  //printJITD(cog, 0);
+  return cog;
+}
+
+struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr) {
+  struct cog *cog_max_read;
+  long low;  
+  for (int i=0; i<number; i++) {
+    low = arr[i];
+    crack_scan(cog,low,low+range);
+    if(i%2000==0) 
+      {
+        cog_max_read = read_max(cog);
+        splay(cog, cog_max_read);
+      }
+//crack_scan(cog, zipf_rv, zipf_rv + range);
+//    if(i > 100) splay(cog, cog_median);
+//    printf("%d \n", zipf_rv);
+  }
+
+  return cog;
+}
+
+struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long *),
+                    struct cog *cog,
+                    long a,
+                    long b,
+                    long *arr) {
+  struct timeval stop, start;
+  gettimeofday(&start, NULL);
+  struct cog *out = (*function)(cog, a, b,arr);
+  gettimeofday(&stop, NULL);
+  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
+  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
+  printf("Took %lld milliseconds\n", stopms - startms);
+  return out;
+}
+
 #endif

@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "cog.h"
+#include "policy.h"
 
 
 /**
@@ -13,6 +14,8 @@
 struct cog *zig(struct cog *root, struct cog *node) {
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+  root->data.btree.rds = root->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  node->data.btree.rds = node->data.btree.lhs->data.btree.rds + root->data.btree.rds;
 #endif
   root->data.btree.lhs = node->data.btree.rhs;
   node->data.btree.rhs = root;
@@ -29,6 +32,8 @@ struct cog *zig(struct cog *root, struct cog *node) {
 struct cog *zag(struct cog *root, struct cog *node) {
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  node->data.btree.rds = node->data.btree.rhs->data.btree.rds + root->data.btree.rds;
 #endif
   root->data.btree.rhs = node->data.btree.lhs;
   node->data.btree.lhs = root;
@@ -46,6 +51,10 @@ struct cog *zigzig(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.lhs;
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+  root->data.btree.rds = root->data.btree.rhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds;
+  parent->data.btree.rds = root->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  node->data.btree.rds = parent->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  
 #endif
   root->data.btree.lhs = parent->data.btree.rhs;
   parent->data.btree.lhs = node->data.btree.rhs;
@@ -65,6 +74,9 @@ struct cog *zagzag(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.rhs;
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds;
+  parent->data.btree.rds = root->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  node->data.btree.rds = parent->data.btree.rds + node->data.btree.rhs->data.btree.rds;
 #endif
   root->data.btree.rhs = parent->data.btree.lhs;
   parent->data.btree.rhs = node->data.btree.lhs;
@@ -84,6 +96,9 @@ struct cog *zigzag(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.lhs;
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+  parent->data.btree.rds = parent->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  root->data.btree.rds = root->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  node->data.btree.rds = parent->data.btree.rds + root->data.btree.rds ;
 #endif
   root->data.btree.lhs = node->data.btree.rhs;
   parent->data.btree.rhs = node->data.btree.lhs;
@@ -103,6 +118,10 @@ struct cog *zagzig(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.rhs;
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
+  parent->data.btree.rds = parent->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  node->data.btree.rds = parent->data.btree.rds + root->data.btree.rds ;
+
 #endif
   root->data.btree.rhs = node->data.btree.lhs;
   parent->data.btree.lhs = node->data.btree.rhs;
@@ -150,9 +169,9 @@ struct cog *splayDepth(struct cog *root, struct cog *node, int depth) {
       if (depth % 2) {
         return zig(root, splayDepth(root->data.btree.lhs, node, depth));
       } else {
-        if (node->data.btree.sep <= root->data.btree.lhs->data.btree.sep) {
+        if (node->data.btree.sep <= root->data.btree.lhs->data.btree.sep) {        
           return zigzig(root, splayDepth(root->data.btree.lhs->data.btree.lhs, node, depth));
-        } else {
+        } else {          
           return zigzag(root, splayDepth(root->data.btree.lhs->data.btree.rhs, node, depth));
         }
       }
@@ -160,17 +179,17 @@ struct cog *splayDepth(struct cog *root, struct cog *node, int depth) {
   } else {
     if (root->data.btree.rhs == node) {
       return zag(root, node);
-    } else if (root->data.btree.rhs->data.btree.rhs == node) {
+    } else if (root->data.btree.rhs->data.btree.rhs == node) {    
       return zagzag(root, node);
-    } else if (root->data.btree.rhs->data.btree.lhs == node) {
+    } else if (root->data.btree.rhs->data.btree.lhs == node) {      
       return zagzig(root, node);
     } else {
       if (depth % 2) {
         return zag(root, splayDepth(root->data.btree.rhs, node, depth));
       } else {
-        if (node->data.btree.sep > root->data.btree.rhs->data.btree.sep) {
+        if (node->data.btree.sep > root->data.btree.rhs->data.btree.sep) {          
           return zagzag(root, splayDepth(root->data.btree.rhs->data.btree.rhs, node, depth));
-        } else {
+        } else {          
           return zagzig(root, splayDepth(root->data.btree.rhs->data.btree.lhs, node, depth));
         }
       }
