@@ -9,6 +9,8 @@ typedef enum {
 
 
 long Splay_interval;
+long Lower_count;
+long Higher_count;
 
 
 
@@ -84,19 +86,37 @@ struct zipcog *zipfinize(struct cog *cog, long levels) {
     //splay(cog, cog_max_read);
     struct cog *cog_max_read, *cog_left, *cog_right;
 
+    struct zipcog *zip,*left_zip, *right_zip;
+    zip = malloc(sizeof(struct zipcog));
+    zip->cog = malloc(sizeof(struct cog));
+    left_zip = malloc(sizeof(struct zipcog));
+    left_zip->cog = malloc(sizeof(struct cog));
+    right_zip = malloc(sizeof(struct zipcog));
+    right_zip->cog = malloc(sizeof(struct cog));
+    zip->cog = cog;
+    zip->count =0;
     if(levels==0)
     	return 0;
     else{
 
     	cog_max_read = read_max(cog);
-        splay(cog, cog_max_read);
+    	if(cog_max_read!=zip.cog)
+    	{
+    		//No splay required
+    		zip->count+=1;
+    		zip->cog = splay(cog, cog_max_read);
+    	}
+
+        
         cog_left = cog->data.btree.lhs;
         cog_right = cog->data.btree.rhs;
-        zipfinize(cog_left,levels--);
-        zipfinize(cog_right,levels--);
+        lef_zip = zipfinize(cog_left,levels--);
+        zip->count+=left_zip->count;
+        right->zip = zipfinize(cog_right,levels--);
+        zip+=right_zip->count;
     }  
 
-  return 0;
+  return zip;
 }
 
 
@@ -134,6 +154,9 @@ struct cog *decay(struct cog *cog, long factor) {
  */
 void initPolicyInterval(long interval, long low, long high) {
   // TODO: Alok/Archana
+	Splay_interval = interval;
+	Lower_count = low;
+	Higher_count = high;
 	
 }
 
@@ -148,7 +171,7 @@ void initPolicyInterval(long interval, long low, long high) {
  */
 long getCurrentInterval() {
   // TODO: Alok/Archana
-  return 0;
+  return Splay_interval;
 }
 
 /**
@@ -158,12 +181,7 @@ long getCurrentInterval() {
  */
 void updatePolicyInterval(long interval) {
   // TODO: Alok/Archana
+	Splay_interval = interval;
 }
-
-/**
- * Updates the policy interval.
- *
- * @param - the policy interval
- */
 
 #endif

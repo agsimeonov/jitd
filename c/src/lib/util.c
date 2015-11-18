@@ -338,7 +338,7 @@ struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long
   for (int i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);
-    if(i%200==0) 
+    if(i%1000==0) 
       {
         cog_max_read = read_max(cog);
         splay(cog, cog_max_read);
@@ -350,6 +350,27 @@ struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long
 
   return cog;
 }
+
+struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long range,long *arr) {
+  struct cog *cog_max_read;
+  long low;  
+  for (int i=0; i<number; i++) {
+    low = arr[i];
+    crack_scan(cog,low,low+range);
+    if(i%200==0) 
+      {
+
+        //cog_max_read = read_max(cog);
+        splay(cog, getMedian(cog));
+      }
+//crack_scan(cog, zipf_rv, zipf_rv + range);
+//    if(i > 100) splay(cog, cog_median);
+//    printf("%d \n", zipf_rv);
+  }
+
+  return cog;
+}
+
 
 
 struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr) {

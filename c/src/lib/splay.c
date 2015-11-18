@@ -14,7 +14,8 @@
 struct cog *zig(struct cog *root, struct cog *node) {
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
-  root->data.btree.rds = root->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  long root_count = root->data.btree.rds - (root->data.btree.rhs->data.btree.rds+root->data.btree.lhs->data.btree.rds);
+  root->data.btree.rds = root->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds+root_count;
   node->data.btree.rds = node->data.btree.lhs->data.btree.rds + root->data.btree.rds;
 #endif
   root->data.btree.lhs = node->data.btree.rhs;

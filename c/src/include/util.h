@@ -96,6 +96,7 @@ struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long
 long *zipfian_array(long number,long range);
 
 struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr);
+struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long range,long *arr);
 struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr) ;
 
 #endif
