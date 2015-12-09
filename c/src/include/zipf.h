@@ -54,4 +54,6 @@ long getZipfCountAtCDF(long n, double alpha, float cdf);
  */
 long getNumberOfLevels(long elements);
 
+double fastPow(double a, double b);
+
 #endif

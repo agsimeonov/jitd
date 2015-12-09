@@ -3,6 +3,7 @@
 
 #include "zipf.h"
 
+#define pow fastPow
 
 /**
  * Acquire a Zipf random variable.
@@ -12,7 +13,7 @@
  * @return a Zipf random variable
  */
 int zipf(double alpha, int n) {
-  static int    first = TRUE; // Static first time flag
+  static int    first = TRUE_1; // Static first time flag
   static double c     = 0;    // Normalization constant
   double        z;            // Uniform random number (0 < z < 1)
   double        sum_prob;     // Sum of probabilities
@@ -20,10 +21,10 @@ int zipf(double alpha, int n) {
   int           i;            // Loop counter
 
   // Compute normalization constant on first call only
-  if (first == TRUE) {
+  if (first == TRUE_1) {
     for (i=1; i<=n; i++) c = c + (1.0 / pow((double) i, alpha));
     c = 1.0 / c;
-    first = FALSE;
+    first = FALSE_1;
   }
 
   // Pull a uniform random number (0 < z < 1)
@@ -92,7 +93,8 @@ double harmonic(int n, double alpha) {
 }
 
 /**
- * Acquires the number of elements in a Zipfian distribution of size N at a target Zipfian CDF.
+ * Acquires the number of elements in a Zipfian distribution of size N at a target 
+ * Zipfian CDF.
  * This number is symbolized by the following formula:
  * count = e^((CDF * harmonic number at n) - Euler's Constant) - .5
  *
@@ -116,3 +118,12 @@ long getNumberOfLevels(long elements) {
   // TODO: Archana
   return 0;
 }
+
+
+double fastPow(double a, double b) {
+	union { double d; int x[2]; } u = { a };
+	u.x[1] = (int)(b * (u.x[1] - 1072632447) + 1072632447);
+	u.x[0] = 0;
+	return u.d;
+}
+

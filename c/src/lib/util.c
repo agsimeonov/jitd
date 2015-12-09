@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <stdlib.h>
+#include <json/json.h>
+#include <string.h>
 
 #include "cog.h"
 #include "cracker.h"
@@ -8,6 +11,8 @@
 #include "zipf.h"
 #include "splay.h"
 #include "policy.h"
+#include "util.h"
+
 
 
 /**
@@ -284,7 +289,7 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
 struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay, int steps) {
   for (int i = 0; i < steps; i++) {
     cog = timeRun(randomReads, cog, reads, range);
-    if (doSplay != FALSE) {
+    if (doSplay != FALSE_1) {
       cog = splay(cog, getHarvest());
     }
   }
@@ -306,9 +311,7 @@ long *random_array(long number,long range) {
   long *arr = malloc(number * sizeof(long));
   for (long i = 0; i < number; i++) {
     long a = rand() % range;    
-    //cog = crack(cog, low, high);
     *(arr+i)=a;
-    //printf("Value is %ld\n",a );
   }
   return arr;
 }
@@ -320,52 +323,78 @@ long *zipfian_array(long number,long range) {
   int n = range;
   int zipf_rv;
   rand_val(1400);
-  struct cog *cog_median;
-
   for (int i=0; i<number; i++) {
     zipf_rv = zipf(alpha, n);
-
-    //cog = crack(cog, low, high);
     *(arr+i)=zipf_rv;
-    //printf("Value is %ld\n",zipf_rv );
   }
   return arr;
 }
 
-struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr) {
+long *zipfian_scrambled_array(long number,long range) {
+  float alpha = 0.99;
+  long *arr = malloc(number * sizeof(long));
+
+  FILE *file;
+  char *line = NULL;
+  int len = 0;
+  char read;
+  file=fopen("test_scramble", "r");
+  char * e;
+
+  //printf("Retrieved line of length \n");
+  if (file == NULL)
+    return 1;
+  //printf("Retrieved line of length \n");
+  long i=0;
+  while ((read = getline(&line, &len, file)) != -1) {
+    //printf("Retrieved line of length %s :\n", &read);
+    //printf("%s", line);
+     if(i<number) {
+    //zipf_rv = zipf(alpha, n);
+    *(arr+i)=strtol(line, &e, 0);
+
+      }
+      else
+        break;
+      i++;
+    }
+  printf("The return data size is %ld\n",i);
+  return arr;
+}
+
+
+
+struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr,long interval) {
   struct cog *cog_max_read;
   long low;  
-  for (int i=0; i<number; i++) {
+
+  int levels =2;
+  for (long i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);
-    if(i%1000==0) 
+    if(i%interval==0) 
       {
-        cog_max_read = read_max(cog);
-        splay(cog, cog_max_read);
+        
+        //splay(cog, read_max(cog));
+        splay_level(cog,levels);
       }
-//crack_scan(cog, zipf_rv, zipf_rv + range);
-//    if(i > 100) splay(cog, cog_median);
-//    printf("%d \n", zipf_rv);
+
   }
 
   return cog;
 }
 
-struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long range,long *arr) {
+struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long range,long *arr,long interval) {
   struct cog *cog_max_read;
   long low;  
-  for (int i=0; i<number; i++) {
+  for (long i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);
-    if(i%200==0) 
-      {
 
-        //cog_max_read = read_max(cog);
+    if(i%interval==0) 
+      {
         splay(cog, getMedian(cog));
       }
-//crack_scan(cog, zipf_rv, zipf_rv + range);
-//    if(i > 100) splay(cog, cog_median);
-//    printf("%d \n", zipf_rv);
   }
 
   return cog;
@@ -373,15 +402,14 @@ struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long r
 
 
 
-struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr) {
+
+
+struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr,long interval) {
   struct cog *cog_max_read;
   long low;  
-  for (int i=0; i<number; i++) {
+  for (long i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);    
-//crack_scan(cog, zipf_rv, zipf_rv + range);
-//    if(i > 100) splay(cog, cog_median);
-//    printf("%d \n", zipf_rv);
   }
 
   return cog;
@@ -389,7 +417,7 @@ struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *ar
 
 
 
-struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr) {
+struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr,long interval) {
   long low;
   printf("Read count is %ld\n",number);
   for (long i = 0; i < number; i++) {
@@ -398,42 +426,126 @@ struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr
     crack_scan(cog,low,low+range);
 
   }
-  //printJITD(cog, 0);
   return cog;
 }
 
-struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr) {
+struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr,long interval) {
   struct cog *cog_max_read;
   long low;  
-  for (int i=0; i<number; i++) {
+  for (long i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);
-    if(i%2000==0) 
+    if(i%interval==0) 
       {
         cog_max_read = read_max(cog);
         splay(cog, cog_max_read);
       }
-//crack_scan(cog, zipf_rv, zipf_rv + range);
-//    if(i > 100) splay(cog, cog_median);
-//    printf("%d \n", zipf_rv);
   }
 
   return cog;
 }
 
-struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long *),
+struct cog *randomReads_splay_array_median(struct cog *cog, long number, long range,long *arr,long interval) {
+  struct cog *cog_max_read;
+  long low;  
+  for (long i=0; i<number; i++) {
+    low = arr[i];
+    crack_scan(cog,low,low+range);
+    if(i%interval==0) 
+      {        
+        splay(cog, getMedian(cog));
+
+      }
+  }
+
+  return cog;
+}
+
+struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long *,long),
                     struct cog *cog,
                     long a,
                     long b,
-                    long *arr) {
+                    long *arr,
+                    long interval) {
   struct timeval stop, start;
   gettimeofday(&start, NULL);
-  struct cog *out = (*function)(cog, a, b,arr);
+  //printf("The interval for splay is :%ld \n",interval);
+  struct cog *out = (*function)(cog, a, b,arr,interval);
   gettimeofday(&stop, NULL);
   long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
   long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
   printf("Took %lld milliseconds\n", stopms - startms);
   return out;
 }
+
+
+json_object *tree_json(struct cog *cog)
+{
+     json_object * jobj_root, *jobj_left, *jobj_right,*jobj_list, *jobj_int_right, *jobj_int_left, *jobj_ret;
+     jobj_root = json_object_new_object();
+     jobj_left = json_object_new_object();
+     jobj_right = json_object_new_object();
+     jobj_list = json_object_new_object();
+     jobj_ret = json_object_new_object();
+
+
+
+     json_object *jstring_left, *jstring_right, *jstring_root,*jstring_ret;
+
+      long root_sep,reads;
+      char tmp[250];
+      //tmp = (char *)malloc(sizeof(char)*250);
+      char *str;
+      str = (char *)malloc(sizeof(char)*100);
+      
+      
+      //Object to hold child array;
+      json_object *jarray = json_object_new_array();
+
+     struct cog *left,*right;
+     left = cog->data.btree.lhs;
+     right = cog->data.btree.rhs;
+     
+     if(cog->type==COG_BTREE)
+      {
+        root_sep = cog->data.btree.sep;
+        reads = cog->data.btree.rds;
+        sprintf(tmp, "%ld", root_sep);
+        strcat(str,"≤");
+        strcat(str,tmp);
+        strcat(str,",Reads ");
+        sprintf(tmp, "%ld", reads);
+        strcat(str,tmp);
+        printf("\n\nSeparator is: %s\n",str);
+      
+        jstring_root = json_object_new_string(str);
+        jobj_left = tree_json(left);
+        printf("Current separator is :%s\n",str);
+        printf("Intermediate left json:%s \n",json_object_to_json_string(jobj_left));
+
+        printf("Intermediate left json after return is:%s \n",json_object_to_json_string(jobj_left));
+        jobj_right = tree_json(right);
+        //printf("Current separator is :%s\n",str);
+        printf("Intermediate right json:%s \n",json_object_to_json_string(jobj_right));
+
+        printf("Intermediate left json after return is:%s \n",json_object_to_json_string(jobj_right));
+        json_object_array_add(jarray,jobj_left);
+        json_object_array_add(jarray,jobj_right);
+
+        json_object_object_add(jobj_root,"name", jstring_root); 
+        json_object_object_add(jobj_root,"children",jarray);
+        printf("Returning the total json as:%s \n",json_object_to_json_string(jobj_root));
+        return jobj_root;
+
+      }
+      else
+        {
+          jstring_ret = json_object_new_string("Elements");
+          json_object_object_add(jobj_ret,"name",jstring_ret);
+          printf("Returning json as:%s \n",json_object_to_json_string(jobj_ret));
+          return jobj_ret;
+        }  
+}
+
 
 #endif

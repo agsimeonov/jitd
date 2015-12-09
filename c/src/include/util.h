@@ -4,6 +4,7 @@
 #include "cog.h"
 
 
+
 /**
  * Prints the internal representation of the JITD providing a detailed layout
  * of the current cogs and data present within.
@@ -83,21 +84,32 @@ struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay,
 #ifdef __ADVANCED
 long *random_array(long number,long range);
 
-struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr) ;
+struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr,long interval) ;
 
-struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr) ;
+struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr,long interval) ;
 
-struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long *),
+
+struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long *,long interval),
                     struct cog *cog,
                     long a,
                     long b,
-                    long *arr) ;
+                    long *arr,
+                    long interval) ;
 
 long *zipfian_array(long number,long range);
+long *zipfian_scrambled_array(long number,long range);
+void *splay_level(struct cog *root, long levels);
 
-struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr);
-struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long range,long *arr);
-struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr) ;
+struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr,long interval);
+struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long range,long *arr,long interval);
+struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr,long interval) ;
+
+struct cog *sort(struct cog *cog);
+
+json_object *tree_json(struct cog *cog);
+
+json_object *tree_json1(struct cog *cog);
+
 
 #endif
 
