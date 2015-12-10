@@ -259,8 +259,8 @@ void readsCounterTest() {
 
 void testZipfinize() {
   double alpha = 1;
-  long elements = 1000;
-  long reads = 100;
+  long elements = 10000;
+  long reads = 1000;
   long count = getZipfCountAtCDF(elements, alpha, .5);
   long levels = getNumberOfLevels(count);
   struct cog *cog = mk_random_array(elements);

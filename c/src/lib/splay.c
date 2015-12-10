@@ -180,12 +180,18 @@ struct cog *splayDepth(struct cog *root, struct cog *node, int depth) {
       return zigzag(root, node);
     } else {
       if (depth % 2) {
-        return zig(root, splayDepth(root->data.btree.lhs, node, depth));
+        node = splayDepth(root->data.btree.lhs, node, depth);
+        root->data.btree.lhs = node;
+        return zig(root, node);
       } else {
         if (node->data.btree.sep <= root->data.btree.lhs->data.btree.sep) {
-          return zigzig(root, splayDepth(root->data.btree.lhs->data.btree.lhs, node, depth));
+          node = splayDepth(root->data.btree.lhs->data.btree.lhs, node, depth);
+          root->data.btree.lhs->data.btree.lhs = node;
+          return zigzig(root, node);
         } else {
-          return zigzag(root, splayDepth(root->data.btree.lhs->data.btree.rhs, node, depth));
+          node = splayDepth(root->data.btree.lhs->data.btree.rhs, node, depth);
+          root->data.btree.lhs->data.btree.rhs = node;
+          return zigzag(root, node);
         }
       }
     }
@@ -198,12 +204,18 @@ struct cog *splayDepth(struct cog *root, struct cog *node, int depth) {
       return zagzig(root, node);
     } else {
       if (depth % 2) {
-        return zag(root, splayDepth(root->data.btree.rhs, node, depth));
+        node = splayDepth(root->data.btree.rhs, node, depth);
+        root->data.btree.rhs = node;
+        return zag(root, node);
       } else {
         if (node->data.btree.sep > root->data.btree.rhs->data.btree.sep) {
-          return zagzag(root, splayDepth(root->data.btree.rhs->data.btree.rhs, node, depth));
+          node = splayDepth(root->data.btree.rhs->data.btree.rhs, node, depth);
+          root->data.btree.rhs->data.btree.rhs = node;
+          return zagzag(root, node);
         } else {
-          return zagzig(root, splayDepth(root->data.btree.rhs->data.btree.lhs, node, depth));
+          node = splayDepth(root->data.btree.rhs->data.btree.lhs, node, depth);
+          root->data.btree.rhs->data.btree.lhs = node;
+          return zagzig(root, node);
         }
       }
     }
