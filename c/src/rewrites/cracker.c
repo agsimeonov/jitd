@@ -54,7 +54,7 @@ cog *pushdown_concats(cog *c, long low, long high) {
         start = array_cog->data.sortedarray.start;
         count = rhs->data.sortedarray.len;
       }
-      int radix_pos = radix(array_cog, start, count, lhs->data.btree.sep);
+      int radix_pos = radix((struct buffer *)array_cog, start, count, lhs->data.btree.sep);
       cog *new_lhs = lhs->data.btree.lhs;
       cog *new_rhs = lhs->data.btree.rhs;
       

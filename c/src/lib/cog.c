@@ -256,7 +256,7 @@ void convert_to_sortedarray(struct cog *cog) {
   cog->type = COG_SORTEDARRAY;
   cog->data.sortedarray.records = cog->data.array.records;
   cog->data.sortedarray.start = 0;
-  cog->data.sortedarray.len = cog->data.sortedarray.len;
+  cog->data.sortedarray.len = cog->data.array.len;
 }
 
 struct cog *array_load(iterator iter,int len) {
