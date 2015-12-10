@@ -4,6 +4,9 @@
 #include "zipf.h"
 
 
+static const double _defaultSeed = 34583490;
+static int _initialized = FALSE;
+
 /**
  * Acquire a Zipf random variable.
  *
@@ -18,6 +21,8 @@ int zipf(double alpha, int n) {
   double        sum_prob;     // Sum of probabilities
   double        zipf_value;   // Computed exponential value to be returned
   int           i;            // Loop counter
+
+  if (_initialized == FALSE) rand_val(_defaultSeed);
 
   // Compute normalization constant on first call only
   if (first == TRUE) {
@@ -65,6 +70,7 @@ double rand_val(int seed) {
 
   // Set the seed if argument is non-zero and then return zero
   if (seed > 0) {
+    _initialized = TRUE;
     x = seed;
     return(0.0);
   }
