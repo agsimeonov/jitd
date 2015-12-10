@@ -263,10 +263,9 @@ void testPolicyWithInterval() {
   long count = getZipfCountAtCDF(elements, alpha, .5);
   long levels = getNumberOfLevels(count);
   struct cog *cog = mk_random_array(elements);
-  rand_val(3465456);
+  rand_val(34534);
   cog = zipfianReads(cog, alpha, 100, elements);
   cog = zipfinize(cog, levels);
-  printf("\n\n\n");
   printJITD(cog, 0);
 }
 #endif
