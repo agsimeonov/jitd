@@ -288,3 +288,30 @@ struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay,
   return cog;
 }
 #endif
+
+#ifdef __ADVANCED
+/**
+ * Acquires the cumulative reads at a node if possible.
+ *
+ * @param cog - a given cog
+ * @return the cumulative reads at the cog, 0 if it is NULL or it is not a BTree cog
+ */
+long getCumulativeReads(struct cog *cog) {
+  if (cog == NULL || cog->type != COG_BTREE) return 0;
+  return cog->data.btree.rds;
+}
+
+/**
+ * Acquires the actual read count at a given BTree node.
+ *
+ * @param cog - a BTree node
+ * @return the actual read count for that given BTree node
+ */
+long getReadsAtNode(struct cog *cog) {
+  long count = cog->data.btree.rds;
+  if (count == 0) return count;
+  count -= getCumulativeReads(cog->data.btree.lhs);
+  count -= getCumulativeReads(cog->data.btree.rhs);
+  return count;
+}
+#endif

@@ -60,6 +60,8 @@ typedef struct iter_list {
   struct iter_list *next;
 } iter_list;
 
+int radix(buffer b, int low, int cnt, int radix);
+
 //////////////////////// ITERATOR METHODS
 // These methods operate over the iterator "interface" defined above.
 // You should use these methods rather than calling the class-specific versions.
