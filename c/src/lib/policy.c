@@ -17,9 +17,9 @@ static long _splays    = 0;
 /**
  * Attempt to find a good splay candidate - usually highest node in the subtrees.
  *
- * @param cog
- * @param reads
- * @return
+ * @param cog - root cog used for search
+ * @param reads - number of reads to top
+ * @return a good splay candidate, or NULL if none such
  */
 struct cog *findSplayCandidate(struct cog *cog, long reads) {
   struct cog *candidate = NULL;
