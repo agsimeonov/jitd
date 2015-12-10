@@ -66,6 +66,17 @@ struct cog *timeRun(struct cog *(*function)(struct cog *, long, long),
  */
 struct cog *randomReads(struct cog *cog, long number, long range);
 
+/**
+ * Do a given number of zipfian reads on a cog.
+ *
+ * @param cog - the given cog
+ * @param number - number of reads to do on a cog
+ * @param alpha - zipfian rate of decay
+ * @param range - the key range for reads
+ * @return the resulting BTree
+ */
+struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range);
+
 #ifdef __HARVEST
 /**
  * Run a test involving reads and splaying on a harvested value (last value read).

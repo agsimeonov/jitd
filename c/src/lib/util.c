@@ -5,6 +5,7 @@
 #include "cog.h"
 #include "cracker.h"
 #include "splay.h"
+#include "zipf.h"
 
 
 /**
@@ -13,6 +14,7 @@
  * @param cog - cog to print
  */
 void printArrayCog(struct cog *cog) {
+#ifndef __ADVANCED
   printf("[");
 
   if (cog->type == COG_ARRAY) {
@@ -34,6 +36,7 @@ void printArrayCog(struct cog *cog) {
 
     printf(">");
   }
+#endif
 }
 
 /**
@@ -50,7 +53,7 @@ void printTreeCog(struct cog *cog) {
 #ifndef __ADVANCED
     printf("≤ %ld", cog->data.btree.sep);
 #else
-    printf("≤ %ld Reads: %ld|%ld", cog->data.btree.sep, cog->data.btree.rds, getReadsAtNode(cog));
+    printf("%ld|%ld", cog->data.btree.rds, getReadsAtNode(cog));
 #endif
   }
 }
@@ -260,6 +263,26 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
   for (long i = 0; i < number; i++) {
     long a = rand() % range;
     long b = rand() % range;
+    long low = a <= b ? a : b;
+    long high = a > b ? a : b;
+    cog = crack(cog, low, high);
+  }
+  return cog;
+}
+
+/**
+ * Do a given number of zipfian reads on a cog.
+ *
+ * @param cog - the given cog
+ * @param number - number of reads to do on a cog
+ * @param alpha - zipfian rate of decay
+ * @param range - the key range for reads
+ * @return the resulting BTree
+ */
+struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range) {
+  for (long i = 0; i < number; i++) {
+    long a = zipf(alpha, range);
+    long b = zipf(alpha, range);
     long low = a <= b ? a : b;
     long high = a > b ? a : b;
     cog = crack(cog, low, high);

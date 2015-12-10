@@ -15,10 +15,10 @@ cog *pushdown_concats(cog *c, long low, long high) {
   if(c->type == COG_BTREE) {
     cog *lhs = c->data.btree.lhs;
     cog *rhs = c->data.btree.rhs;
-  
+
     if(c->data.btree.sep <= high) {
       rhs = pushdown_concats(rhs, low, high);
-    }  
+    }
 
     if(c->data.btree.sep >= low) {
       lhs = pushdown_concats(lhs, low, high);
@@ -125,7 +125,7 @@ cog *crack_one(cog *c, long val) {
 #ifndef __ADVANCED
       return make_btree(lhs, rhs, val);
 #else
-      return makeBtreeWithReads(lhs, rhs, val, 1);
+      return makeBtreeWithReads(lhs, rhs, val, c->data.btree.rds + 1);
 #endif
     } else {
 #ifdef __ADVANCED
@@ -213,18 +213,33 @@ cog *crack_scan(cog *c, long low, long high) {
   } else if(c->type == COG_BTREE) {
     cog *lhs = c->data.btree.lhs;
     cog *rhs = c->data.btree.rhs;
+#ifdef __ADVANCED
+    long reads = 0;
+#endif
     if(low < c->data.btree.sep) {
       if(high < c->data.btree.sep) {
         lhs = crack_scan(lhs, low, high);
+#ifdef __ADVANCED
+      reads += 2;
+#endif
       } else {
         lhs = crack_one(lhs, low);
+#ifdef __ADVANCED
+      reads += 1;
+#endif
       }
     }
     if(high > c->data.btree.sep) {
       if(low > c->data.btree.sep) {
         rhs = crack_scan(rhs, low, high);
+#ifdef __ADVANCED
+      reads += 2;
+#endif
       } else {
         rhs = crack_one(rhs, high);
+#ifdef __ADVANCED
+      reads += 1;
+#endif
       }
     }
 
@@ -238,11 +253,11 @@ cog *crack_scan(cog *c, long low, long high) {
 #ifndef __ADVANCED
       return make_btree(lhs, rhs, sep);
 #else
-      return makeBtreeWithReads(lhs, rhs, sep, 1);
+      return makeBtreeWithReads(lhs, rhs, sep, c->data.btree.rds + reads);
 #endif
     } else {
 #ifdef __ADVANCED
-      c->data.btree.rds += 1;
+      c->data.btree.rds += reads;
 #endif
       return c;
     }

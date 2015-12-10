@@ -163,7 +163,7 @@ void test7(int reads){
  * @param range - the range of number to be scannned(selectivity)
  * @return resulting JITD
  */
-struct cog *zipfianReads(struct cog *cog, long number, long range) {
+struct cog *doZipfianReads(struct cog *cog, long number, long range) {
   float alpha =0.99;
   int n=KEY_RANGE;
   int zipf_rv;
@@ -208,7 +208,7 @@ void test8() {
   struct cog *cog, *cog_result, *cog_median;
   cog = mk_random_array(1000000);
   // Cog without splaying
-  cog_result = timeRun(zipfianReads, cog, 1000, 1000);
+  cog_result = timeRun(doZipfianReads, cog, 1000, 1000);
 //  struct cog **inorder_list=inorder(struct cog *cog);
 //  cog_median = getMedian(cog_result);
 
@@ -258,7 +258,16 @@ void readsCounterTest() {
 }
 
 void testPolicyWithInterval() {
-
+  double alpha = 1;
+  long elements = 1000;
+  long count = getZipfCountAtCDF(elements, alpha, .5);
+  long levels = getNumberOfLevels(count);
+  struct cog *cog = mk_random_array(elements);
+  rand_val(3465456);
+  cog = zipfianReads(cog, alpha, 100, elements);
+  cog = zipfinize(cog, levels);
+  printf("\n\n\n");
+  printJITD(cog, 0);
 }
 #endif
 
@@ -285,10 +294,10 @@ int main(int argc, char **argv) {
 //  test9();
 
 #ifdef __ADVANCED
-  readsCounterTest();
-  printf("%lf\n", harmonic(2,1));
-  printf("%lu\n", getZipfCountAtCDF(100000, 1, 0.50));
-  printf("%lu\n", getNumberOfLevels(236));
+//  readsCounterTest();
+//  printf("%lf\n", harmonic(2,1));
+//  printf("%lu\n", getZipfCountAtCDF(100000, 1, 0.50));
+//  printf("%lu\n", getNumberOfLevels(236));
   testPolicyWithInterval();
 #endif
 
