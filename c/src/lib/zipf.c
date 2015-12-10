@@ -87,18 +87,10 @@ double rand_val(int seed) {
  * @return the n-th harmonic number
  */
 double harmonic(int n, double alpha) {
-
-  // TODO: Razieh
-  long i=0;
-  double sum=0.0;
-
-  for (i=1;i<=n;i++){
-
-    sum = sum + (1.0/(pow(i,alpha)));
-
+  double sum = 0.0;
+  for (long i = 1; i <= n; i++) {
+    sum = sum + (1.0 / (pow(i, alpha)));
   }
-
-
   return sum;
 }
 
@@ -113,14 +105,7 @@ double harmonic(int n, double alpha) {
  * @return number of elements at the target CDF for the given size Zipfian distribution
  */
 long getZipfCountAtCDF(long n, double alpha, float cdf) {
-
-
-
-  long count=0;
-  double m= harmonic(n,alpha);
-  count= pow(M_E,(( cdf*m)-GAMMA))-0.5;
-
-  return count;
+  return pow(M_E, ((cdf * harmonic(n, alpha)) - GAMMA)) - 0.5;
 }
 
 /**
@@ -129,21 +114,6 @@ long getZipfCountAtCDF(long n, double alpha, float cdf) {
  * @param elements - given number of elements
  * @return number of level in a binary search tree
  */
-
-
 long getNumberOfLevels(long elements) {
-
-  long b= ceill(log2(elements));
-
-
-  return b;
+  return ceill(log2(elements));
 }
-
-
-
-
-
-
-
-
-
