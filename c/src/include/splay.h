@@ -3,6 +3,10 @@
 
 #include "cog.h"
 
+#ifdef __ADVANCED
+#include "util.h"
+#endif
+
 
 /**
  * The splay operation moves a given node to the root.
