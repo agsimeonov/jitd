@@ -3,6 +3,7 @@
 #include <limits.h>
 
 #include "cog.h"
+#include "policy.h"
 #include "splay.h"
 #include "util.h"
 
@@ -75,6 +76,7 @@ struct cog *zipfinizeSubtree(struct cog *cog, long levels) {
  * @return the new root of the rearranged tree
  */
 struct cog *zipfinize(struct cog *cog, long levels) {
+  decay(cog);
   _splays = 0;
   struct cog *rearranged = zipfinizeSubtree(cog, levels);
   if (_splays <= _threshold) _threshold *= 2;
