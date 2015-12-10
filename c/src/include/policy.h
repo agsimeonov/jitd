@@ -1,14 +1,9 @@
 #ifndef POLICY_LIB_H_SHIELD
 #define POLICY_LIB_H_SHIELD
 
+#ifdef __ADVANCED
 #include "cog.h"
 
-#ifdef __ADVANCED
-/** Contains the root of the tree after zipfinize as well as the number of splayed nodes. */
-typedef struct zipcog {
-  struct cog *cog; // root of the tree after zipfinize
-  long count; // number of nodes that were splayed during zipfinizing
-} zipcog;
 
 /**
  * Moves up nodes into the given number of levels so that the resulting tree has close to a
@@ -16,47 +11,52 @@ typedef struct zipcog {
  *
  * @param cog - root of the tree
  * @param levels - given number of levels
- * @return the new root of the tree and the number of nodes that were moved
+ * @return the new root of the rearranged tree
  */
-struct zipcog *zipfinize(struct cog *cog, long levels);
+struct cog *zipfinize(struct cog *cog, long levels);
 
 /**
- * Decays the tree by the given factor. For example, if the factor is x the read count for every
- * node in the tree will be reduced as such: floor(reads/x)
+ * Decays the tree read counts when necessary so that they don't overflow.
  *
  * @param cog - given tree
- * @param factor - decay factor
  * @return root of the given tree
  */
-struct cog *decay(struct cog *cog, long factor);
+struct cog *decay(struct cog *cog);
+
+/**
+ * Acquires the current interval for running the policy.  Self adjusting based on the threshold.
+ *
+ * @return the next interval
+ */
+long getInterval();
+
+/**
+ * Sets the policy interval threshold.
+ *
+ * @param - the policy interval
+ */
+void setThreshold(long threshold);
 
 /**
  * Initializes the interval for running the policy.
  *
  * @param interval - initial interval for the policy
- * @param low - threshold - number of moves signifying a need to decrease the interval
- * @param high - threshold - number of moves signifying a need to increase the interval
+ * @param threshold - number of moves signifying a need to change the interval
  */
-void initPolicyInterval(long interval, long low, long high);
+void initInterval(long interval, long threshold);
 
 /**
- * Acquires the current interval for running the policy.  This interval is self adjusting.
- * Based on the initialized thresholds it will either increase or decrease.
- * (For now we can double/half the interval however we should consider smarter ways to adjust it
- * one of the suggested approaches is looking at Huffman trees as their operations could somehow
- * help us figure out an interesting (smarter) way to do this).
- *
- * @return the next interval
- */
-long getCurrentInterval();
-
-/**
- * Updates the policy interval.
+ * Sets the policy interval.
  *
  * @param - the policy interval
  */
-void updatePolicyInterval(long interval);
+void setInterval(long interval);
 
+/**
+ * Acquires the policy interval threshold.
+ *
+ * @return the policy interval threshold
+ */
+long getThreshold();
 #endif
-
 #endif

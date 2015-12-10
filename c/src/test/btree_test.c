@@ -256,6 +256,10 @@ void readsCounterTest() {
   printf("\n\n");
   printJITD(cog, 0);
 }
+
+void testPolicyWithInterval() {
+
+}
 #endif
 
 int main(int argc, char **argv) {
@@ -285,6 +289,7 @@ int main(int argc, char **argv) {
   printf("%lf\n", harmonic(2,1));
   printf("%lu\n", getZipfCountAtCDF(100000, 1, 0.50));
   printf("%lu\n", getNumberOfLevels(236));
+  testPolicyWithInterval();
 #endif
 
 #ifdef __HARVEST

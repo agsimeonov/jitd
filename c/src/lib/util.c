@@ -50,7 +50,7 @@ void printTreeCog(struct cog *cog) {
 #ifndef __ADVANCED
     printf("≤ %ld", cog->data.btree.sep);
 #else
-    printf("≤ %ld Reads: %ld", cog->data.btree.sep, cog->data.btree.rds);
+    printf("≤ %ld Reads: %ld|%ld", cog->data.btree.sep, cog->data.btree.rds, getReadsAtNode(cog));
 #endif
   }
 }

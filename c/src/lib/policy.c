@@ -1,18 +1,77 @@
-#include "cog.h"
-
-
 #ifdef __ADVANCED
+#include <stdio.h>
+#include <limits.h>
+
+#include "cog.h"
+#include "splay.h"
+#include "util.h"
+
+
+static const long _DECAY_FACTOR    = 3;
+static const long _DECAY_THRESHOLD = LONG_MAX - (LONG_MAX / _DECAY_FACTOR);
+
+static long _interval  = 100;
+static long _threshold = 10;
+static long _splays    = 0;
+
+/**
+ * Attempt to find a good splay candidate - usually highest node in the subtrees.
+ *
+ * @param cog
+ * @param reads
+ * @return
+ */
+struct cog *findSplayCandidate(struct cog *cog, long reads) {
+  struct cog *candidate = NULL;
+  struct cog *contender = NULL;
+  if (cog == NULL || cog->type != COG_BTREE) return NULL;
+  if (cog->data.btree.rds < reads) return NULL;
+  if (getReadsAtNode(cog) > reads) {
+    contender = cog;
+    reads = cog->data.btree.rds;
+  }
+  candidate = findSplayCandidate(cog->data.btree.lhs, reads);
+  if (candidate != NULL) return candidate;
+  candidate = findSplayCandidate(cog->data.btree.rhs, reads);
+  if (candidate != NULL) return candidate;
+  return contender;
+}
+
+/**
+ * Zipfinizes the subtree.
+ *
+ * @param cog - root of the tree
+ * @param levels - given number of levels
+ * @return the new root of the rearranged tree
+ */
+struct cog *zipfinizeSubtree(struct cog *cog, long levels) {
+  if (levels == 0 || cog == NULL || cog->type != COG_BTREE) return cog;
+  long reads = getReadsAtNode(cog);
+  struct cog *candidate = findSplayCandidate(cog, reads);
+  if (candidate == NULL) return cog;
+
+  long remaining = levels - 1;
+  _splays += 1;
+  struct cog *rearranged = splay(cog, candidate);
+  zipfinizeSubtree(cog->data.btree.lhs, remaining);
+  zipfinizeSubtree(cog->data.btree.rhs, remaining);
+  return rearranged;
+}
+
 /**
  * Moves up nodes into the given number of levels so that the resulting tree has close to a
  * Zipfian distribution for the given levels based on the number of reads.
  *
  * @param cog - root of the tree
  * @param levels - given number of levels
- * @return the new root of the tree and the number of nodes that were moved
+ * @return the new root of the rearranged tree
  */
-struct zipcog *zipfinize(struct cog *cog, long levels) {
-  // TODO: Alok
-  return 0;
+struct cog *zipfinize(struct cog *cog, long levels) {
+  _splays = 0;
+  struct cog *rearranged = zipfinizeSubtree(cog, levels);
+  if (_splays <= _threshold) _threshold *= 2;
+  else _threshold /= 2;
+  return rearranged;
 }
 
 /**
@@ -20,45 +79,70 @@ struct zipcog *zipfinize(struct cog *cog, long levels) {
  * node in the tree will be reduced as such: floor(reads/x)
  *
  * @param cog - given tree
- * @param factor - decay factor
+ */
+void decaySubtree(struct cog *cog) {
+  if (cog != NULL && cog->type == COG_BTREE) {
+    cog->data.btree.rds /= _DECAY_FACTOR;
+    decaySubtree(cog->data.btree.lhs);
+    decaySubtree(cog->data.btree.rhs);
+  }
+}
+
+/**
+ * Decays the tree read counts when necessary so that they don't overflow.
+ *
+ * @param cog - given tree
  * @return root of the given tree
  */
-struct cog *decay(struct cog *cog, long factor) {
-  // TODO: Archana
-  return 0;
+struct cog *decay(struct cog *cog) {
+  if (cog->data.btree.rds >= _DECAY_THRESHOLD) decaySubtree(cog);
+  return cog;
+}
+
+/**
+ * Sets the policy interval.
+ *
+ * @param - the policy interval
+ */
+void setInterval(long interval) {
+  _interval = interval;
+}
+
+/**
+ * Sets the policy interval threshold.
+ *
+ * @param - the policy interval
+ */
+void setThreshold(long threshold) {
+  _threshold = threshold;
 }
 
 /**
  * Initializes the interval for running the policy.
  *
  * @param interval - initial interval for the policy
- * @param low - threshold - number of moves signifying a need to decrease the interval
- * @param high - threshold - number of moves signifying a need to increase the interval
+ * @param threshold - number of moves signifying a need to change the interval
  */
-void initPolicyInterval(long interval, long low, long high) {
-  // TODO: Alok/Archana
+void initInterval(long interval, long threshold) {
+  setInterval(interval);
+  setThreshold(threshold);
 }
 
 /**
- * Acquires the current interval for running the policy.  This interval is self adjusting.
- * Based on the initialized thresholds it will either increase or decrease.
- * (For now we can double/half the interval however we should consider smarter ways to adjust it
- * one of the suggested approaches is looking at Huffman trees as their operations could somehow
- * help us figure out an interesting (smarter) way to do this).
+ * Acquires the current interval for running the policy.  Self adjusting based on the threshold.
  *
  * @return the next interval
  */
-long getCurrentInterval() {
-  // TODO: Alok/Archana
-  return 0;
+long getInterval() {
+  return _interval;
 }
 
 /**
- * Updates the policy interval.
+ * Acquires the policy interval threshold.
  *
- * @param - the policy interval
+ * @return the policy interval threshold
  */
-void updatePolicyInterval(long interval) {
-  // TODO: Alok/Archana
+long getThreshold() {
+  return _threshold;
 }
 #endif
