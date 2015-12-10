@@ -25,11 +25,14 @@ struct cog *findSplayCandidate(struct cog *cog, long reads) {
   struct cog *candidate = NULL;
   struct cog *contender = NULL;
   if (cog == NULL || cog->type != COG_BTREE) return NULL;
-  if (cog->data.btree.rds < reads) return NULL;
-  if (getReadsAtNode(cog) > reads) {
+  if (cog->data.btree.rds <= reads) return NULL;
+
+  long cogReads = getReadsAtNode(cog);
+  if (cogReads > reads) {
     contender = cog;
-    reads = cog->data.btree.rds;
+    reads = cogReads;
   }
+
   candidate = findSplayCandidate(cog->data.btree.lhs, reads);
   if (candidate != NULL) return candidate;
   candidate = findSplayCandidate(cog->data.btree.rhs, reads);
@@ -48,13 +51,18 @@ struct cog *zipfinizeSubtree(struct cog *cog, long levels) {
   if (levels == 0 || cog == NULL || cog->type != COG_BTREE) return cog;
   long reads = getReadsAtNode(cog);
   struct cog *candidate = findSplayCandidate(cog, reads);
-  if (candidate == NULL) return cog;
+
+  struct cog *rearranged;
+  if (candidate == NULL) {
+    rearranged = cog;
+  } else {
+    rearranged = splay(cog, candidate);
+    _splays += 1;
+  }
 
   long remaining = levels - 1;
-  _splays += 1;
-  struct cog *rearranged = splay(cog, candidate);
-  zipfinizeSubtree(rearranged->data.btree.lhs, remaining);
-  zipfinizeSubtree(rearranged->data.btree.rhs, remaining);
+  rearranged->data.btree.lhs = zipfinizeSubtree(rearranged->data.btree.lhs, remaining);
+  rearranged->data.btree.rhs = zipfinizeSubtree(rearranged->data.btree.rhs, remaining);
   return rearranged;
 }
 
@@ -71,6 +79,7 @@ struct cog *zipfinize(struct cog *cog, long levels) {
   struct cog *rearranged = zipfinizeSubtree(cog, levels);
   if (_splays <= _threshold) _threshold *= 2;
   else _threshold /= 2;
+  printf("SPLAYS: %li\n", _splays);
   return rearranged;
 }
 
