@@ -53,8 +53,8 @@ struct cog *zipfinizeSubtree(struct cog *cog, long levels) {
   long remaining = levels - 1;
   _splays += 1;
   struct cog *rearranged = splay(cog, candidate);
-  zipfinizeSubtree(cog->data.btree.lhs, remaining);
-  zipfinizeSubtree(cog->data.btree.rhs, remaining);
+  zipfinizeSubtree(rearranged->data.btree.lhs, remaining);
+  zipfinizeSubtree(rearranged->data.btree.rhs, remaining);
   return rearranged;
 }
 
