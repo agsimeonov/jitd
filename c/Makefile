@@ -16,13 +16,13 @@ test: $(TARGETS)
 	@for i in $(TARGETS); do echo ====== Testing $$i ======; ./$$i; done
 
 $(TARGETS) : % : $(patsubst %, %.o, $(FILES)) src/test/%_test.c
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -lm
 
 %.c : %.ds ../jitd 
 	../jitd $< > $@
 
 %.o : %.c
-	$(CC) -c -o $@ $<
+	$(CC) -c -o $@ $< -lm
 
 advanced: test
 

@@ -7,8 +7,8 @@
 #include "util.h"
 
 
-static const long _DECAY_FACTOR    = 3;
-static const long _DECAY_THRESHOLD = LONG_MAX - (LONG_MAX / _DECAY_FACTOR);
+#define _DECAY_FACTOR    3
+#define _DECAY_THRESHOLD LONG_MAX - (LONG_MAX / _DECAY_FACTOR)
 
 static long _interval  = 100;
 static long _threshold = 10;
