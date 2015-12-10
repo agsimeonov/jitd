@@ -247,6 +247,14 @@ void readsCounterTest() {
   cog = crack(cog, 15, 25);
   cog = crack(cog, 65, 75);
   printJITD(cog, 0);
+
+  cog = splay(cog, cog->data.btree.lhs);
+  printf("\n\n");
+  printJITD(cog, 0);
+
+  cog = splay(cog, cog->data.btree.rhs->data.btree.rhs);
+  printf("\n\n");
+  printJITD(cog, 0);
 }
 #endif
 

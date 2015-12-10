@@ -16,10 +16,10 @@
  */
 struct cog *zig(struct cog *root, struct cog *node) {
 #ifdef __ADVANCED
+  long total = root->data.btree.rds;
   root->data.btree.rds -= getCumulativeReads(root->data.btree.lhs);
   root->data.btree.rds += getCumulativeReads(node->data.btree.rhs);
-  node->data.btree.rds -= getCumulativeReads(node->data.btree.rhs);
-  node->data.btree.rds += root->data.btree.rds;
+  node->data.btree.rds = total;
 #endif
   root->data.btree.lhs = node->data.btree.rhs;
   node->data.btree.rhs = root;
@@ -35,10 +35,10 @@ struct cog *zig(struct cog *root, struct cog *node) {
  */
 struct cog *zag(struct cog *root, struct cog *node) {
 #ifdef __ADVANCED
+  long total = root->data.btree.rds;
   root->data.btree.rds -= getCumulativeReads(root->data.btree.rhs);
   root->data.btree.rds += getCumulativeReads(node->data.btree.lhs);
-  node->data.btree.rds -= getCumulativeReads(node->data.btree.lhs);
-  node->data.btree.rds += root->data.btree.rds;
+  node->data.btree.rds = total;
 #endif
   root->data.btree.rhs = node->data.btree.lhs;
   node->data.btree.lhs = root;
@@ -55,13 +55,13 @@ struct cog *zag(struct cog *root, struct cog *node) {
 struct cog *zigzig(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.lhs;
 #ifdef __ADVANCED
+  long total = root->data.btree.rds;
   root->data.btree.rds -= getCumulativeReads(root->data.btree.lhs);
   root->data.btree.rds += getCumulativeReads(parent->data.btree.rhs);
   parent->data.btree.rds = getReadsAtNode(parent);
   parent->data.btree.rds += getCumulativeReads(node->data.btree.rhs);
   parent->data.btree.rds += root->data.btree.rds;
-  node->data.btree.rds -= getCumulativeReads(node->data.btree.rhs);
-  node->data.btree.rds += parent->data.btree.rds;
+  node->data.btree.rds = total;
 #endif
   root->data.btree.lhs = parent->data.btree.rhs;
   parent->data.btree.lhs = node->data.btree.rhs;
@@ -80,13 +80,13 @@ struct cog *zigzig(struct cog *root, struct cog *node) {
 struct cog *zagzag(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.rhs;
 #ifdef __ADVANCED
+  long total = root->data.btree.rds;
   root->data.btree.rds -= getCumulativeReads(root->data.btree.rhs);
   root->data.btree.rds += getCumulativeReads(parent->data.btree.lhs);
   parent->data.btree.rds = getReadsAtNode(parent);
   parent->data.btree.rds += getCumulativeReads(node->data.btree.lhs);
   parent->data.btree.rds += root->data.btree.rds;
-  node->data.btree.rds -= getCumulativeReads(node->data.btree.lhs);
-  node->data.btree.rds += parent->data.btree.rds;
+  node->data.btree.rds = total;
 #endif
   root->data.btree.rhs = parent->data.btree.lhs;
   parent->data.btree.rhs = node->data.btree.lhs;
@@ -105,13 +105,14 @@ struct cog *zagzag(struct cog *root, struct cog *node) {
 struct cog *zigzag(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.lhs;
 #ifdef __ADVANCED
+  long total = root->data.btree.rds;
   root->data.btree.rds = getReadsAtNode(root);
   root->data.btree.rds += getCumulativeReads(node->data.btree.rhs);
   root->data.btree.rds += getCumulativeReads(root->data.btree.rhs);
   parent->data.btree.rds = getReadsAtNode(parent);
   parent->data.btree.rds += getCumulativeReads(parent->data.btree.lhs);
   parent->data.btree.rds += getCumulativeReads(node->data.btree.lhs);
-  node->data.btree.rds = root->data.btree.rds + parent->data.btree.rds;
+  node->data.btree.rds = total;
 #endif
   root->data.btree.lhs = node->data.btree.rhs;
   parent->data.btree.rhs = node->data.btree.lhs;
@@ -130,13 +131,14 @@ struct cog *zigzag(struct cog *root, struct cog *node) {
 struct cog *zagzig(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.rhs;
 #ifdef __ADVANCED
+  long total = root->data.btree.rds;
   root->data.btree.rds = getReadsAtNode(root);
   root->data.btree.rds += getCumulativeReads(node->data.btree.lhs);
   root->data.btree.rds += getCumulativeReads(root->data.btree.lhs);
   parent->data.btree.rds = getReadsAtNode(parent);
   parent->data.btree.rds += getCumulativeReads(parent->data.btree.rhs);
   parent->data.btree.rds += getCumulativeReads(node->data.btree.rhs);
-  node->data.btree.rds = root->data.btree.rds + parent->data.btree.rds;
+  node->data.btree.rds = total;
 #endif
   root->data.btree.rhs = node->data.btree.lhs;
   parent->data.btree.lhs = node->data.btree.rhs;
