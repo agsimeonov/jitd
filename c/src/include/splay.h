@@ -4,6 +4,7 @@
 #include "cog.h"
 
 
+long splay_count;
 /**
  * The splay operation moves a given node to the root.
  *

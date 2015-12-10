@@ -11,6 +11,7 @@ typedef enum {
 long Splay_interval;
 long Lower_count;
 long Higher_count;
+long flag_splay;
 
 
 
@@ -220,29 +221,33 @@ void updatePolicyInterval(long interval) {
  * @return - root of the cog
  */
 
-void *splay_level(struct cog *root, long levels){
+cog *splay_level(struct cog *root, long levels){
 
 	struct cog *int_cog,*left,*right,*cog_max_read;
 
-	if(levels>=0)	
+	if(levels>0)	
 	{
 		cog_max_read = read_max(root);
-		printf("Max read cog is %p\n",cog_max_read);
+		//printf("Max read cog is %p\n",cog_max_read);
 		
-		printf("Splaying at level :%d\n",levels);
-		printf("Before splaying root address %p\n",root);
+		//printf("Splaying at level :%d\n",levels);
+		//printf("Before splaying root address %p\n",root);
+		if(cog_max_read==NULL)
+			return;
 		int_cog = splay(root,cog_max_read);
-		printf("After splaying root address %p\n",int_cog);
+		//printf("After splaying root address %p\n",int_cog);
+		if(int_cog==NULL)
+			return;
 		left = int_cog->data.btree.lhs;
 		right = int_cog->data.btree.rhs;
-		printf("Left splaying root address %p\n",left);
-		printf("Right splaying root address %p\n",right);
+		//printf("Left splaying root address %p\n",left);
+		//printf("Right splaying root address %p\n",right);
 		
 
 
 	if(left!=NULL && left->type == COG_BTREE)
 		{
-			printf("Going to the left subtree\n\n");
+			//printf("Going to the left subtree\n\n");
 			splay_level(left,--levels);
 		}
 	else
@@ -250,7 +255,7 @@ void *splay_level(struct cog *root, long levels){
 
 	if(right!=NULL && right->type == COG_BTREE)
 		{
-			printf("Going to the right subtree\n\n");
+			//printf("Going to the right subtree\n\n");
 			splay_level(right,--levels);	
 		}
 	else
@@ -258,6 +263,8 @@ void *splay_level(struct cog *root, long levels){
 	}
 	else
 		return;
+
+	return int_cog;
 
 }
 

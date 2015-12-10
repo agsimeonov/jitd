@@ -343,16 +343,18 @@ void readsCounterRandomTest() {
   struct cog *cog2 = make_array(0, size, b);
   struct cog *cog3 = make_array(0, size, b);
 
-  long number = 10000000;
+  long number = 1000000;
   long interval = 100;
   long *arr ;
+  long range=100;
   arr = random_array(number,1000000);
+  printf("Nmber of reads:%ld  Selectivity range:%ld Interval of splay:%ld \n", number, range, interval ); 
   printf("Performing the random read test without read count \n\n");
-  cog_result = timeRun_array(randomReads_array, cog1, number, 100,arr,interval);
+  cog_result = timeRun_array(randomReads_array, cog1, number, range,arr,interval);
   printf("Performing the random read test with read count \n\n");
-  cog_result = timeRun_array(randomReads_splay_array_max_read, cog2, number, 100,arr,interval);
+  cog_result = timeRun_array(randomReads_splay_array_max_read, cog2, number, range,arr,interval);
   printf("Performing the random read test with median splay \n\n");
-  cog_result = timeRun_array(randomReads_splay_array_max_read, cog3, number, 100,arr,interval);
+  cog_result = timeRun_array(randomReads_splay_array_max_read, cog3, number, range,arr,interval);
   //printJITD(cog_result, 0);
   /*long number=1000,range = 10;
   zipfianReads(cog, number,range);
@@ -377,15 +379,17 @@ void readsCounterZipfianArrayTest() {
   struct cog *cog3 = make_array(0, size, b);
   long *arr ;
 
-  long number = 1000000;
+  long number = 10000000;
   long interval = 100;
-  arr = zipfian_array(number,1000000);
+  long range=100;
+  arr = zipfian_array(number,10000);
+  printf("Nmber of reads:%ld  Selectivity range:%ld Interval of splay:%ld \n", number, range, interval ); 
   printf("Performing the zipfian read test with read count \n\n");
-  cog_result = timeRun_array(zipfianReads_splay_array_max_read, cog1, number, 100,arr,interval);
+  cog_result = timeRun_array(zipfianReads_splay_array_max_read, cog1, number, range,arr,interval);
   printf("Performing the zipfian read test without read count \n\n");
-  cog_result = timeRun_array(zipfianReads_array, cog2, number, 100,arr,interval);
+  cog_result = timeRun_array(zipfianReads_array, cog2, number, range,arr,interval);
   printf("Performing the zipfian read test without read count with splay around median \n\n");
-  cog_result = timeRun_array(zipfianReads_splay_array_median, cog3, number, 100,arr,interval);
+  cog_result = timeRun_array(zipfianReads_splay_array_median, cog3, number, range,arr,interval);
 
 }
 
@@ -405,8 +409,8 @@ void readsCounterZipfianScrambledArrayTest() {
   struct cog *cog2 = make_array(0, size, b);
   struct cog *cog3 = make_array(0, size, b);
   long *arr ;
-  long number = 100000;
-  long interval = 300;
+  long number = 10000000;
+  long interval = 100;
   long range = 100;
   arr = zipfian_scrambled_array(number,1000000);
   printf("Nmber of reads:%ld  Selectivity range:%ld Interval of splay:%ld \n", number, range, interval ); 
@@ -414,7 +418,7 @@ void readsCounterZipfianScrambledArrayTest() {
   cog_result = timeRun_array(zipfianReads_array, cog1, number, range,arr,interval);
   printf("\n\nPerforming the scrambled zipfian read test without read count with splay around median \n");
   cog_result = timeRun_array(zipfianReads_splay_array_median, cog2, number, range,arr,interval);
-   printf("\n\nPerforming the scrambled zipfian read test with read count \n");
+  printf("\n\nPerforming the scrambled zipfian read test with read count \n");
   cog_result = timeRun_array(zipfianReads_splay_array_max_read, cog3, number, range,arr,interval);
 
 }
@@ -428,7 +432,7 @@ void dummytest(){
     b->data[i].value = rand();
   }
 
-  long number = 10000;
+  long number = 10;
   long interval = 300;
   long range = 100;
 
@@ -439,7 +443,7 @@ void dummytest(){
   cog_result = timeRun_array(zipfianReads_splay_array_median, cog1, number, range,arr,interval);
   printJITD(cog_result,0);
   json_object *jobj_root = tree_json(cog_result);
-  printf ("The json object created: %s\n",json_object_to_json_string(jobj_root));
+  //printf ("The json object created: %s\n",json_object_to_json_string(jobj_root));
   FILE *fp;
   fp=fopen("test.json", "w");
   fprintf(fp,json_object_to_json_string(jobj_root));
@@ -490,6 +494,8 @@ int main(int argc, char **argv) {
   dummytest();
 
   //readsCounterZipfianScrambledArrayTest();
+  //readsCounterRandomTest();
+  //readsCounterZipfianArrayTest();
   // TODO: Alok - please create tests to comprehensively showcase that your work is correct - test every case
   // TODO: Archana - please create tests to comprehensively showcase that your work is correct - test every case
   // TODO: Aurijoy - please create tests to comprehensively showcase that your work is correct - test every case

@@ -11,15 +11,23 @@
  * @param node - node to be moved to the root
  * @return the new root of the rearranged tree
  */
-struct cog *zig(struct cog *root, struct cog *node) {
+struct cog *zig(struct cog *root, struct cog *node) {  
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
   long root_count = root->data.btree.rds - (root->data.btree.rhs->data.btree.rds+root->data.btree.lhs->data.btree.rds);
-  root->data.btree.rds = root->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds+root_count;
-  node->data.btree.rds = node->data.btree.lhs->data.btree.rds + root->data.btree.rds;
+  long node_count = node->data.btree.rds - (node->data.btree.rhs->data.btree.rds+node->data.btree.lhs->data.btree.rds);
+  splay_count++;
+  //root->data.btree.rds = root->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds+root_count;
+  //node->data.btree.rds = node->data.btree.lhs->data.btree.rds + root->data.btree.rds;
+
 #endif
   root->data.btree.lhs = node->data.btree.rhs;
   node->data.btree.rhs = root;
+
+#ifdef __ADVANCED
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + root->data.btree.rhs->data.btree.rds + root_count;
+  node->data.btree.rds = node->data.btree.lhs->data.btree.rds + node->data.btree.rhs->data.btree.rds + node_count;
+#endif
   return node;
 }
 
@@ -33,11 +41,19 @@ struct cog *zig(struct cog *root, struct cog *node) {
 struct cog *zag(struct cog *root, struct cog *node) {
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
-  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
-  node->data.btree.rds = node->data.btree.rhs->data.btree.rds + root->data.btree.rds;
+  long root_count = root->data.btree.rds - (root->data.btree.rhs->data.btree.rds+root->data.btree.lhs->data.btree.rds);
+  long node_count = node->data.btree.rds - (node->data.btree.rhs->data.btree.rds+node->data.btree.lhs->data.btree.rds);
+  splay_count++;
+  //root->data.btree.rds = root->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  //node->data.btree.rds = node->data.btree.rhs->data.btree.rds + root->data.btree.rds;
 #endif
   root->data.btree.rhs = node->data.btree.lhs;
   node->data.btree.lhs = root;
+#ifdef __ADVANCED
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + root->data.btree.rhs->data.btree.rds + root_count;
+  node->data.btree.rds = node->data.btree.lhs->data.btree.rds + node->data.btree.rhs->data.btree.rds + node_count;
+#endif
+
   return node;
 }
 
@@ -52,15 +68,24 @@ struct cog *zigzig(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.lhs;
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
-  root->data.btree.rds = root->data.btree.rhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds;
-  parent->data.btree.rds = root->data.btree.rds + node->data.btree.rhs->data.btree.rds;
-  node->data.btree.rds = parent->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  long root_count = root->data.btree.rds - (root->data.btree.rhs->data.btree.rds+root->data.btree.lhs->data.btree.rds);
+  long parent_count = parent->data.btree.rds - (parent->data.btree.rhs->data.btree.rds+parent->data.btree.lhs->data.btree.rds);
+  long node_count = node->data.btree.rds - (node->data.btree.rhs->data.btree.rds+node->data.btree.lhs->data.btree.rds);
+  splay_count++;
+  //root->data.btree.rds = root->data.btree.rhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds + root_count;
+  //parent->data.btree.rds = root->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  //node->data.btree.rds = parent->data.btree.rds + node->data.btree.lhs->data.btree.rds;
   
 #endif
   root->data.btree.lhs = parent->data.btree.rhs;
   parent->data.btree.lhs = node->data.btree.rhs;
   parent->data.btree.rhs = root;
   node->data.btree.rhs = parent;
+#ifdef __ADVANCED
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + root->data.btree.rhs->data.btree.rds + root_count;
+  parent->data.btree.rds = parent->data.btree.lhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds + parent_count;
+  node->data.btree.rds = node->data.btree.lhs->data.btree.rds + node->data.btree.rhs->data.btree.rds + node_count;
+#endif
   return node;
 }
 
@@ -75,14 +100,25 @@ struct cog *zagzag(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.rhs;
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
-  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds;
-  parent->data.btree.rds = root->data.btree.rds + node->data.btree.lhs->data.btree.rds;
-  node->data.btree.rds = parent->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  long root_count = root->data.btree.rds - (root->data.btree.rhs->data.btree.rds+root->data.btree.lhs->data.btree.rds);
+  long parent_count = parent->data.btree.rds - (parent->data.btree.rhs->data.btree.rds+parent->data.btree.lhs->data.btree.rds);
+  long node_count = node->data.btree.rds - (node->data.btree.rhs->data.btree.rds+node->data.btree.lhs->data.btree.rds);
+  splay_count++;
+  //root->data.btree.rds = root->data.btree.lhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds;
+  //parent->data.btree.rds = root->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  //node->data.btree.rds = parent->data.btree.rds + node->data.btree.rhs->data.btree.rds;
 #endif
   root->data.btree.rhs = parent->data.btree.lhs;
   parent->data.btree.rhs = node->data.btree.lhs;
   parent->data.btree.lhs = root;
   node->data.btree.lhs = parent;
+
+#ifdef __ADVANCED
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + root->data.btree.rhs->data.btree.rds + root_count;
+  parent->data.btree.rds = parent->data.btree.lhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds + parent_count;
+  node->data.btree.rds = node->data.btree.lhs->data.btree.rds + node->data.btree.rhs->data.btree.rds + node_count;
+#endif
+
   return node;
 }
 
@@ -97,14 +133,25 @@ struct cog *zigzag(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.lhs;
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
-  parent->data.btree.rds = parent->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
-  root->data.btree.rds = root->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds;
-  node->data.btree.rds = parent->data.btree.rds + root->data.btree.rds ;
+  long root_count = root->data.btree.rds - (root->data.btree.rhs->data.btree.rds+root->data.btree.lhs->data.btree.rds);
+  long parent_count = parent->data.btree.rds - (parent->data.btree.rhs->data.btree.rds+parent->data.btree.lhs->data.btree.rds);
+  long node_count = node->data.btree.rds - (node->data.btree.rhs->data.btree.rds+node->data.btree.lhs->data.btree.rds);
+  splay_count++;
+  //parent->data.btree.rds = parent->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  //root->data.btree.rds = root->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  //node->data.btree.rds = parent->data.btree.rds + root->data.btree.rds ;
 #endif
   root->data.btree.lhs = node->data.btree.rhs;
   parent->data.btree.rhs = node->data.btree.lhs;
   node->data.btree.lhs = parent;
   node->data.btree.rhs = root;
+
+#ifdef __ADVANCED
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + root->data.btree.rhs->data.btree.rds + root_count;
+  parent->data.btree.rds = parent->data.btree.lhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds + parent_count;
+  node->data.btree.rds = node->data.btree.lhs->data.btree.rds + node->data.btree.rhs->data.btree.rds + node_count;
+#endif
+
   return node;
 }
 
@@ -119,15 +166,26 @@ struct cog *zagzig(struct cog *root, struct cog *node) {
   struct cog *parent = root->data.btree.rhs;
 #ifdef __ADVANCED
   // TODO: Aurijoy - feel free to add __ADVANCED blocks as needed in this function
-  parent->data.btree.rds = parent->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds;
-  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
-  node->data.btree.rds = parent->data.btree.rds + root->data.btree.rds ;
+  long root_count = root->data.btree.rds - (root->data.btree.rhs->data.btree.rds+root->data.btree.lhs->data.btree.rds);
+  long parent_count = parent->data.btree.rds - (parent->data.btree.rhs->data.btree.rds+parent->data.btree.lhs->data.btree.rds);
+  long node_count = node->data.btree.rds - (node->data.btree.rhs->data.btree.rds+node->data.btree.lhs->data.btree.rds);
+  splay_count++;
+  //parent->data.btree.rds = parent->data.btree.rhs->data.btree.rds + node->data.btree.rhs->data.btree.rds;
+  //root->data.btree.rds = root->data.btree.lhs->data.btree.rds + node->data.btree.lhs->data.btree.rds;
+  //node->data.btree.rds = parent->data.btree.rds + root->data.btree.rds ;
 
 #endif
   root->data.btree.rhs = node->data.btree.lhs;
   parent->data.btree.lhs = node->data.btree.rhs;
   node->data.btree.rhs = parent;
   node->data.btree.lhs = root;
+
+#ifdef __ADVANCED
+  root->data.btree.rds = root->data.btree.lhs->data.btree.rds + root->data.btree.rhs->data.btree.rds + root_count;
+  parent->data.btree.rds = parent->data.btree.lhs->data.btree.rds + parent->data.btree.rhs->data.btree.rds + parent_count;
+  node->data.btree.rds = node->data.btree.lhs->data.btree.rds + node->data.btree.rhs->data.btree.rds + node_count;
+#endif
+
   return node;
 }
 

@@ -369,14 +369,25 @@ struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long
   long low;  
 
   int levels =2;
+  splay_count=0;
   for (long i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);
     if(i%interval==0) 
       {
-        
-        //splay(cog, read_max(cog));
-        splay_level(cog,levels);
+        //printf("Interval value is: %ld\n",interval );
+        cog=splay(cog, read_max(cog));
+        //splay_level(cog,levels);
+        //printf("Number of splays:%ld\n",splay_count);
+        if(splay_count > 10 && interval>100)
+          {
+            interval = interval/2;
+          }
+        else if(splay_count <5)
+        {
+            interval = interval+100;
+        }
+        splay_count=0;
       }
 
   }
@@ -386,14 +397,24 @@ struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long
 
 struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long range,long *arr,long interval) {
   struct cog *cog_max_read;
-  long low;  
+  long low;
+  splay_count=0;  
   for (long i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);
 
     if(i%interval==0) 
       {
-        splay(cog, getMedian(cog));
+        cog=splay(cog, getMedian(cog));
+        if(splay_count > 10 && interval>100)
+          {
+            interval = interval/2;
+          }
+        else if(splay_count <5)
+        {
+            interval = interval+100;
+        }
+        splay_count=0;
       }
   }
 
@@ -431,14 +452,24 @@ struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr
 
 struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr,long interval) {
   struct cog *cog_max_read;
-  long low;  
+  long low;
+  splay_count=0;  
   for (long i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);
     if(i%interval==0) 
       {
         cog_max_read = read_max(cog);
-        splay(cog, cog_max_read);
+        cog=splay(cog, cog_max_read);
+        if(splay_count > 10 && interval>100)
+          {
+            interval = interval/2;
+          }
+        else if(splay_count <5)
+        {
+            interval = interval+100;
+        }
+        splay_count=0;
       }
   }
 
@@ -447,13 +478,23 @@ struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long 
 
 struct cog *randomReads_splay_array_median(struct cog *cog, long number, long range,long *arr,long interval) {
   struct cog *cog_max_read;
-  long low;  
+  long low;
+  splay_count=0;  
   for (long i=0; i<number; i++) {
     low = arr[i];
     crack_scan(cog,low,low+range);
     if(i%interval==0) 
       {        
         splay(cog, getMedian(cog));
+        if(splay_count > 10 && interval>100)
+          {
+            interval = interval/2;
+          }
+        else if(splay_count <5)
+        {
+            interval = interval+100;
+        }
+        splay_count=0;
 
       }
   }
@@ -516,25 +557,25 @@ json_object *tree_json(struct cog *cog)
         strcat(str,",Reads ");
         sprintf(tmp, "%ld", reads);
         strcat(str,tmp);
-        printf("\n\nSeparator is: %s\n",str);
+        //printf("\n\nSeparator is: %s\n",str);
       
         jstring_root = json_object_new_string(str);
         jobj_left = tree_json(left);
-        printf("Current separator is :%s\n",str);
-        printf("Intermediate left json:%s \n",json_object_to_json_string(jobj_left));
+        //printf("Current separator is :%s\n",str);
+        //printf("Intermediate left json:%s \n",json_object_to_json_string(jobj_left));
 
-        printf("Intermediate left json after return is:%s \n",json_object_to_json_string(jobj_left));
+        //printf("Intermediate left json after return is:%s \n",json_object_to_json_string(jobj_left));
         jobj_right = tree_json(right);
         //printf("Current separator is :%s\n",str);
-        printf("Intermediate right json:%s \n",json_object_to_json_string(jobj_right));
+        //printf("Intermediate right json:%s \n",json_object_to_json_string(jobj_right));
 
-        printf("Intermediate left json after return is:%s \n",json_object_to_json_string(jobj_right));
+        //printf("Intermediate left json after return is:%s \n",json_object_to_json_string(jobj_right));
         json_object_array_add(jarray,jobj_left);
         json_object_array_add(jarray,jobj_right);
 
         json_object_object_add(jobj_root,"name", jstring_root); 
         json_object_object_add(jobj_root,"children",jarray);
-        printf("Returning the total json as:%s \n",json_object_to_json_string(jobj_root));
+        //printf("Returning the total json as:%s \n",json_object_to_json_string(jobj_root));
         return jobj_root;
 
       }
@@ -542,7 +583,7 @@ json_object *tree_json(struct cog *cog)
         {
           jstring_ret = json_object_new_string("Elements");
           json_object_object_add(jobj_ret,"name",jstring_ret);
-          printf("Returning json as:%s \n",json_object_to_json_string(jobj_ret));
+          //printf("Returning json as:%s \n",json_object_to_json_string(jobj_ret));
           return jobj_ret;
         }  
 }

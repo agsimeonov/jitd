@@ -10,7 +10,7 @@ typedef struct zipcog {
   long count; // number of nodes that were splayed during zipfinizing
 } zipcog;
 
-
+long splay_count;
 /**
  * Return the cog with the highest read
  * @param cog - root of the tree
