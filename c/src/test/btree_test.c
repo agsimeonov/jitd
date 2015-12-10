@@ -257,14 +257,15 @@ void readsCounterTest() {
   printJITD(cog, 0);
 }
 
-void testPolicyWithInterval() {
+void testZipfinize() {
   double alpha = 1;
   long elements = 1000;
+  long reads = 100;
   long count = getZipfCountAtCDF(elements, alpha, .5);
   long levels = getNumberOfLevels(count);
   struct cog *cog = mk_random_array(elements);
   rand_val(34534);
-  cog = zipfianReads(cog, alpha, 100, elements);
+  cog = zipfianReads(cog, alpha, reads, elements);
   cog = zipfinize(cog, levels);
   printJITD(cog, 0);
 }
@@ -297,7 +298,7 @@ int main(int argc, char **argv) {
 //  printf("%lf\n", harmonic(2,1));
 //  printf("%lu\n", getZipfCountAtCDF(100000, 1, 0.50));
 //  printf("%lu\n", getNumberOfLevels(236));
-  testPolicyWithInterval();
+  testZipfinize();
 #endif
 
 #ifdef __HARVEST
