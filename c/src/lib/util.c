@@ -137,9 +137,9 @@ void jsonize(struct cog *cog, FILE *file) {
   if (cog == NULL) fprintf(file, "null");
 
   if (cog->type == COG_BTREE) {
-    fprintf(file, "{\"name\":\"[%li]", cog->data.btree.sep);
-    fprintf(file, "<%li>", cog->data.btree.rds);
-    fprintf(file, "%li\",", getReadsAtNode(cog));
+    fprintf(file, "{\"name\":\"%li ", cog->data.btree.sep);
+    fprintf(file, "Total: %li ", cog->data.btree.rds);
+    fprintf(file, "Reads: %li\",", getReadsAtNode(cog));
     fprintf(file, "\"children\":[");
     jsonize(cog->data.btree.lhs, file);
     fprintf(file, ",");
