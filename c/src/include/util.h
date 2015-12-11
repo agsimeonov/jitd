@@ -17,8 +17,9 @@ void printJITD(struct cog *c, int depth);
  * Converts the JITD to JSON and places it in the file './test.txt'.
  *
  * @param cog - the root cog
+ * @param name - output file name
  */
-void jsonJITD(struct cog *cog);
+void jsonJITD(struct cog *cog, char *name);
 
 /** Prints the current pre-processor mode. */
 void printMode();

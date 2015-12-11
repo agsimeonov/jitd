@@ -81,7 +81,6 @@ struct cog *zipfinize(struct cog *cog, long levels) {
   struct cog *rearranged = zipfinizeSubtree(cog, levels);
   if (_splays <= _threshold) _threshold *= 2;
   else _threshold /= 2;
-  printf("SPLAYS: %li\n", _splays);
   return rearranged;
 }
 
@@ -155,5 +154,14 @@ long getInterval() {
  */
 long getThreshold() {
   return _threshold;
+}
+
+/**
+ * Acquires the number of splays performed during the last zipfinize operation.
+ *
+ * @return the number of splays performed during the last zipfinize operation
+ */
+long getSplays() {
+  return _splays;
 }
 #endif

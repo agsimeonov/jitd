@@ -58,5 +58,12 @@ void setInterval(long interval);
  * @return the policy interval threshold
  */
 long getThreshold();
+
+/**
+ * Acquires the number of splays performed during the last zipfinize operation.
+ *
+ * @return the number of splays performed during the last zipfinize operation
+ */
+long getSplays();
 #endif
 #endif

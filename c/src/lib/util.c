@@ -133,14 +133,32 @@ void printJITD(struct cog *cog, int depth) {
   }
 }
 
+void jsonize(struct cog *cog, FILE *file) {
+  if (cog == NULL) fprintf(file, "null");
+
+  if (cog->type == COG_BTREE) {
+    fprintf(file, "{\"name\":\"[%li]", cog->data.btree.sep);
+    fprintf(file, "<%li>", cog->data.btree.rds);
+    fprintf(file, "%li\",", getReadsAtNode(cog));
+    fprintf(file, "\"children\":[");
+    jsonize(cog->data.btree.lhs, file);
+    fprintf(file, ",");
+    jsonize(cog->data.btree.rhs, file);
+    fprintf(file, "]}");
+  } else {
+    fprintf(file, "{\"name\":\"Elements\"}");
+  }
+}
+
 /**
  * Converts the JITD to JSON and places it in the file './test.txt'.
  *
  * @param cog - the root cog
+ * @param name - output file name
  */
-void jsonJITD(struct cog *cog) {
-  FILE *file = fopen("test.json", "w");
-  fprintf(file, "YOYOYO");
+void jsonJITD(struct cog *cog, char *name) {
+  FILE *file = fopen(name, "w");
+  jsonize(cog, file);
   fclose(file);
 }
 

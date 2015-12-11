@@ -268,6 +268,7 @@ void testZipfinize() {
   cog = zipfianReads(cog, alpha, reads, elements);
   cog = zipfinize(cog, levels);
   printJITD(cog, 0);
+  jsonJITD(cog, "test.json");
 }
 #endif
 

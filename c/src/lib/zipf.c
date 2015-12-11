@@ -111,7 +111,7 @@ double harmonic(int n, double alpha) {
  * @return number of elements at the target CDF for the given size Zipfian distribution
  */
 long getZipfCountAtCDF(long n, double alpha, float cdf) {
-  return pow(M_E, ((cdf * harmonic(n, alpha)) - GAMMA)) - 0.5;
+  return pow(E_NUM, ((cdf * harmonic(n, alpha)) - GAMMA)) - 0.5;
 }
 
 /**
