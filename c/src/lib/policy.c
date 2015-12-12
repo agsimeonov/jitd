@@ -79,8 +79,8 @@ struct cog *zipfinize(struct cog *cog, long levels) {
   decay(cog);
   _splays = 0;
   struct cog *rearranged = zipfinizeSubtree(cog, levels);
-  if (_splays <= _threshold) _threshold *= 2;
-  else _threshold /= 2;
+  if (_splays <= _threshold) _interval *= 2;
+  else _interval /= 2;
   return rearranged;
 }
 
