@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include "cog.h"
 #include "cracker.h"
@@ -271,20 +272,54 @@ void testZipfinize() {
   jsonJITD(cog, "test.json");
 }
 
-//void makeZipfArray(long size, double alpha, long range) {
-//  buffer b = buffer_alloc(size);
-//  for(int i = 0; i < size; i++){
-//    b->data[i].key = rand() % KEY_RANGE;
-//    b->data[i].value = rand();
-//  }
-//  //  record_dump(b->data, 0, size);
-//  return b;
-//}
-
 void testConvergence() {
   double alpha = 1;
-  long range = 1000000;
-  struct cog *cog = mk_random_array(range);
+  int size, range;
+  int runs = 10;
+  long totalSplays[runs], totalReads[runs], totalZipfinize[runs];
+  long interval, levels, threshold, converge;
+  struct cog *cog;
+
+  size = 1000000;
+  range = 1000;
+
+  for (int i = 0; i < runs; i++) {
+    interval = 100;
+    threshold = 50;
+    converge = 1;
+
+    totalSplays[i] = 0;
+    totalReads[i] = 0;
+    totalZipfinize[i] = 0;
+
+    initInterval(interval, threshold);
+    levels = getNumberOfLevels(range);
+    sleep(1);
+    rand_val(seedlessRandom());
+    cog = getRandomArray(size, range);
+
+    do {
+      interval = getInterval();
+      totalReads[i] += interval;
+      cog = zipfianReads(cog, alpha, interval, range);
+      cog = zipfinize(cog, levels);
+      totalSplays[i] += getSplays();
+      totalZipfinize[i] += 1;
+    } while (getSplays() > converge);
+  }
+
+  long splays = 0;
+  long reads = 0;
+  long zipfs = 0;
+  for (int i = 0; i < runs; i++) {
+    splays += totalSplays[i];
+    reads += totalReads[i];
+    zipfs += totalZipfinize[i];
+  }
+  splays /= runs;
+  reads /= runs;
+  zipfs /= runs;
+  printf("[AVERAGE] SPLAYS: %li READS: %li ZIPFINIZE: %li\n", splays, reads, zipfs);
 }
 #endif
 
@@ -316,8 +351,7 @@ int main(int argc, char **argv) {
 //  printf("%lu\n", getZipfCountAtCDF(100000, 1, 0.50));
 //  printf("%lu\n", getNumberOfLevels(236));
 //  testZipfinize();
-//  testConvergence();
-  printf("%i\n%i\n", zipf(1, 4354356), zipf(1, 4354356));
+  testConvergence();
 #endif
 
 #ifdef __HARVEST
