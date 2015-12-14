@@ -1,10 +1,10 @@
 #include <math.h>
 #include <assert.h>
 
+#include "util.h"
 #include "zipf.h"
 
 
-static const double _defaultSeed = 34583490;
 static int _initialized = FALSE;
 
 /**
@@ -22,7 +22,7 @@ int zipf(double alpha, int n) {
   double        zipf_value;   // Computed exponential value to be returned
   int           i;            // Loop counter
 
-  if (_initialized == FALSE) rand_val(_defaultSeed);
+  if (_initialized == FALSE) rand_val(seedlessRandom());
 
   // Compute normalization constant on first call only
   if (first == TRUE) {

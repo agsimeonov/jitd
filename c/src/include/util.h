@@ -85,6 +85,13 @@ struct cog *randomReads(struct cog *cog, long number, long range);
  */
 struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range);
 
+/**
+ * Acquire a random number - no seed issues.
+ *
+ * @return a random number
+ */
+int seedlessRandom();
+
 #ifdef __HARVEST
 /**
  * Run a test involving reads and splaying on a harvested value (last value read).

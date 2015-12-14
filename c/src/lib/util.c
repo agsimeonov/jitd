@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+#include <time.h>
 
 #include "cog.h"
 #include "cracker.h"
@@ -317,6 +318,22 @@ struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range)
     cog = crack(cog, low, high);
   }
   return cog;
+}
+
+/**
+ * Acquire a random number - no seed issues.
+ *
+ * @return a random number
+ */
+int seedlessRandom() {
+  static int first = 1;
+
+  if (first == 1) {
+    srand(time(NULL) ^ (int)&seedlessRandom);
+    first = 0;
+  }
+
+  return rand();
 }
 
 #ifdef __HARVEST
