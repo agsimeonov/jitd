@@ -270,6 +270,22 @@ void testZipfinize() {
   printJITD(cog, 0);
   jsonJITD(cog, "test.json");
 }
+
+//void makeZipfArray(long size, double alpha, long range) {
+//  buffer b = buffer_alloc(size);
+//  for(int i = 0; i < size; i++){
+//    b->data[i].key = rand() % KEY_RANGE;
+//    b->data[i].value = rand();
+//  }
+//  //  record_dump(b->data, 0, size);
+//  return b;
+//}
+
+void testConvergence() {
+  double alpha = 1;
+  long range = 1000000;
+  struct cog *cog = mk_random_array(range);
+}
 #endif
 
 int main(int argc, char **argv) {
@@ -299,7 +315,9 @@ int main(int argc, char **argv) {
 //  printf("%lf\n", harmonic(2,1));
 //  printf("%lu\n", getZipfCountAtCDF(100000, 1, 0.50));
 //  printf("%lu\n", getNumberOfLevels(236));
-  testZipfinize();
+//  testZipfinize();
+//  testConvergence();
+  printf("%i\n%i\n", zipf(1, 4354356), zipf(1, 4354356));
 #endif
 
 #ifdef __HARVEST
