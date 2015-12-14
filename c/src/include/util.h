@@ -92,6 +92,15 @@ struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range)
  */
 int seedlessRandom();
 
+/**
+ * Acquire a random array cog.
+ *
+ * @param size - size of the array
+ * @param range - key range
+ * @return a random array cog
+ */
+cog *getRandomArray(int size, int range);
+
 #ifdef __HARVEST
 /**
  * Run a test involving reads and splaying on a harvested value (last value read).

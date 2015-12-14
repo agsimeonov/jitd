@@ -153,10 +153,18 @@ struct cog *zagzig(struct cog *root, struct cog *node) {
 int getDepth(struct cog *root, struct cog *node) {
   if (root == node) {
     return 0;
-  } else if (node->data.btree.sep <= root->data.btree.sep) {
+  } else if (node->data.btree.sep < root->data.btree.sep) {
     return 1 + getDepth(root->data.btree.lhs, node);
-  } else {
+  } else if (node->data.btree.sep > root->data.btree.sep) {
     return 1 + getDepth(root->data.btree.rhs, node);
+  } else {
+    struct cog *next = root->data.btree.lhs;
+    if (next != NULL && next->type == COG_BTREE && next->data.btree.sep == node->data.btree.sep) {
+      return 1 + getDepth(next, node);
+    } else {
+      next = root->data.btree.rhs;
+      return 1 + getDepth(next, node);
+    }
   }
 }
 
@@ -171,7 +179,8 @@ int getDepth(struct cog *root, struct cog *node) {
 struct cog *splayDepth(struct cog *root, struct cog *node, int depth) {
   if (root == node)  {
     return root;
-  } else if (node->data.btree.sep <= root->data.btree.sep) {
+  } else if (node->data.btree.sep < root->data.btree.sep) {
+left:
     if (root->data.btree.lhs == node) {
       return zig(root, node);
     } else if (root->data.btree.lhs->data.btree.lhs == node) {
@@ -195,7 +204,8 @@ struct cog *splayDepth(struct cog *root, struct cog *node, int depth) {
         }
       }
     }
-  } else {
+  } else if (node->data.btree.sep > root->data.btree.sep) {
+right:
     if (root->data.btree.rhs == node) {
       return zag(root, node);
     } else if (root->data.btree.rhs->data.btree.rhs == node) {
@@ -218,6 +228,13 @@ struct cog *splayDepth(struct cog *root, struct cog *node, int depth) {
           return zagzig(root, node);
         }
       }
+    }
+  } else {
+    struct cog *next = root->data.btree.lhs;
+    if (next != NULL && next->type == COG_BTREE && next->data.btree.sep == node->data.btree.sep) {
+      goto left;
+    } else {
+      goto right;
     }
   }
 }

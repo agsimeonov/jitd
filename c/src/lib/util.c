@@ -336,6 +336,24 @@ int seedlessRandom() {
   return rand();
 }
 
+/**
+ * Acquire a random array cog.
+ *
+ * @param size - size of the array
+ * @param range - key range
+ * @return a random array cog
+ */
+cog *getRandomArray(int size, int range) {
+  buffer buffer = buffer_alloc(size);
+
+  for(int i = 0; i < size; i++){
+    buffer->data[i].key = seedlessRandom() % range;
+    buffer->data[i].value = seedlessRandom();
+  }
+
+  return make_array(0, size, buffer);;
+}
+
 #ifdef __HARVEST
 /**
  * Run a test involving reads and splaying on a harvested value (last value read).
