@@ -347,8 +347,8 @@ cog *getRandomArray(int size, int range) {
   buffer buffer = buffer_alloc(size);
 
   for(int i = 0; i < size; i++){
-    buffer->data[i].key = seedlessRandom() % range;
-    buffer->data[i].value = seedlessRandom();
+    buffer->data[i].key = rand() % range;
+    buffer->data[i].value = rand();
   }
 
   return make_array(0, size, buffer);;

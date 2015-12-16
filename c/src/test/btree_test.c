@@ -321,6 +321,54 @@ void testConvergence() {
   zipfs /= runs;
   printf("[AVERAGE] SPLAYS: %li READS: %li ZIPFINIZE: %li\n", splays, reads, zipfs);
 }
+
+void testSpeed() {
+  struct cog *cog;
+  struct timeval stop, start;
+  int size, range, chunk, total;
+  long interval, threshold, levels;
+  double alpha = 1;
+  size = 1000000;
+  range = 1000;
+  interval = 100;
+  threshold = 50;
+
+  rand_val(4357894);
+  initInterval(interval, threshold);
+  cog = getRandomArray(size, range);
+  levels = getNumberOfLevels(range);
+
+  total = 1000000;
+
+  gettimeofday(&start, NULL);
+
+  while (1) {
+    if (total == 0) break;
+    chunk = getInterval();
+    if (chunk > total) chunk = total;
+
+    cog = zipfianReads(cog, alpha, interval, range);
+
+    // Median
+//    struct cog *median = getMedian(cog);
+//    cog = splay(cog, median);
+
+    // Harvest
+//    struct cog *harvest = getHarvest();
+//    cog = splay(cog, harvest);
+
+    // Zipfian Policy
+//    cog = zipfinize(cog, levels);
+
+    total -= chunk;
+  }
+
+  gettimeofday(&stop, NULL);
+
+  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
+  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
+  printf("Took %lld milliseconds\n", stopms - startms);
+}
 #endif
 
 int main(int argc, char **argv) {
@@ -351,7 +399,8 @@ int main(int argc, char **argv) {
 //  printf("%lu\n", getZipfCountAtCDF(100000, 1, 0.50));
 //  printf("%lu\n", getNumberOfLevels(236));
 //  testZipfinize();
-  testConvergence();
+//  testConvergence();
+  testSpeed();
 #endif
 
 #ifdef __HARVEST
