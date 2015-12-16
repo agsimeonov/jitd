@@ -1,9 +1,13 @@
 #ifndef POLICY_LIB_H_SHIELD
 #define POLICY_LIB_H_SHIELD
 
-#ifdef __ADVANCED
 #include "cog.h"
 
+#ifdef __ADVANCED
+
+
+long splay_count;
+//static long _splays    = 0;
 
 /**
  * Moves up nodes into the given number of levels so that the resulting tree has close to a
@@ -14,6 +18,8 @@
  * @return the new root of the rearranged tree
  */
 struct cog *zipfinize(struct cog *cog, long levels);
+
+struct cog *splay_median(struct cog *cog);
 
 /**
  * Decays the tree read counts when necessary so that they don't overflow.
@@ -59,11 +65,6 @@ void setInterval(long interval);
  */
 long getThreshold();
 
-/**
- * Acquires the number of splays performed during the last zipfinize operation.
- *
- * @return the number of splays performed during the last zipfinize operation
- */
-long getSplays();
 #endif
+
 #endif

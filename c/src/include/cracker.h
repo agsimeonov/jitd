@@ -7,8 +7,8 @@ cog *crack_scan(cog *c, long low, long high);
 
 #ifdef __HARVEST
 
-#define FALSE 0 // Boolean false
-#define TRUE  1 // Boolean true
+#define FALSE_1 0 // Boolean false
+#define TRUE_1  1 // Boolean true
 
 /**
  * Acquires the last BTree cog that was read from in crack_scan().

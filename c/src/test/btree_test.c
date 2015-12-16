@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <json/json.h>
 
 #include "cog.h"
 #include "cracker.h"
@@ -9,6 +9,8 @@
 #include "adaptive_merge.h"
 #include "zipf.h"
 #include "policy.h"
+#include "array.h"
+
 
 #define BUFFER_SIZE 10
 #define KEY_RANGE   1000000
@@ -123,11 +125,16 @@ void splayTest() {
   cog *one = make_btree(zero, nine, 1);
   cog *twelve = make_btree(NULL, NULL, 12);
   cog *eleven = make_btree(one, twelve, 11);
+  printf("Performing the splay\n");
   printf("Before splay:\n");
   printJITD(eleven,0);
-  printf("After splay:\n");
-  splay(eleven, seven);
-  printJITD(seven, 0);
+  json_object *jobj_root = tree_json(eleven);
+  printf ("The json object created: %s\n",json_object_to_json_string(jobj_root));
+  //printf("After splay:\n");
+  //splay(eleven, seven);
+  //printJITD(seven, 0);
+
+
 }
 
 void test6(int reads){
@@ -164,7 +171,7 @@ void test7(int reads){
  * @param range - the range of number to be scannned(selectivity)
  * @return resulting JITD
  */
-struct cog *doZipfianReads(struct cog *cog, long number, long range) {
+struct cog *dozipfianReads(struct cog *cog, long number, long range) {
   float alpha =0.99;
   int n=KEY_RANGE;
   int zipf_rv;
@@ -178,6 +185,44 @@ struct cog *doZipfianReads(struct cog *cog, long number, long range) {
 
   return cog;
 }
+
+/**
+ * Function to generate the zipfian reads calling the zipf function.
+ *
+ * @param cog - the given cog
+ * @param number - the number of scans to be performed on the given cog
+ * @param range - the range of number to be scannned(selectivity)
+ * @return resulting JITD
+ */
+/*struct cog *zipfianReads_splay_max_read(struct cog *cog, long number, long range) {
+  float alpha =0.99;
+  int n=KEY_RANGE;
+  int zipf_rv;
+  rand_val(1400);
+  struct cog *cog_max_read,*root;
+  root=cog;
+
+  for (int i=1; i<number; i++) {
+    zipf_rv = zipf(alpha, n);
+    printf("Value is %d\n",zipf_rv );
+    crack_scan(cog,zipf_rv,zipf_rv+range);
+    //printf("%d \n", zipf_rv);
+    //root = cog;
+    if(i%2000==0) 
+      {
+        //printf("Performing the splay :\n");
+        //printJITD(root,0);
+        cog_max_read = read_max(root);
+        //printf("Read max count is : %ld\n", cog_max_read->data.btree.rds);
+        splay(cog, cog_max_read);
+
+      }
+
+  }
+
+  return root;
+}*/
+
 
 /**
  * Function to perform zipfian read with splay operation.
@@ -196,7 +241,14 @@ struct cog *zipfianReads_splay(struct cog *cog, long number, long range) {
 
   for (int i=1; i<number; i++) {
     zipf_rv = zipf(alpha, n);
-    if(i%2==0) cog_median = getMedian(cog);
+
+    if(i%2000==0) 
+      {
+        cog_median = getMedian(cog);
+        splay(cog, cog_median);
+      }
+
+
     crack_scan(cog, zipf_rv, zipf_rv + range);
 //    if(i > 100) splay(cog, cog_median);
 //    printf("%d \n", zipf_rv);
@@ -208,14 +260,14 @@ struct cog *zipfianReads_splay(struct cog *cog, long number, long range) {
 void test8() {
   struct cog *cog, *cog_result, *cog_median;
   cog = mk_random_array(1000000);
-  // Cog without splaying
-  cog_result = timeRun(doZipfianReads, cog, 1000, 1000);
-//  struct cog **inorder_list=inorder(struct cog *cog);
-//  cog_median = getMedian(cog_result);
+  //Cog without splaying
+  //cog_result = timeRun(zipfianReads, cog, 1000, 1000);
+  //struct cog **inorder_list=inorder(struct cog *cog);
+  //cog_median = getMedian(cog_result);
 
-  // Cog with splaying
-//  timeRun(splayTest, cog, 1000, 1000000);
-//  printJITD(cog_result, 0);
+  //Cog with splaying
+  //timeRun(splayTest, cog, 1000, 1000000);
+  //printJITD(cog_result, 0);
 }
 
 void test9() {
@@ -233,7 +285,8 @@ void test9() {
 
 #ifdef __ADVANCED
 /** A simple test that makes sure read counters are properly incremented when upon cracking. */
-void readsCounterTest() {
+
+/*void readsCounterTest() {
   int size = 100;
   buffer b = buffer_alloc(size);
 
@@ -248,127 +301,174 @@ void readsCounterTest() {
   cog = crack(cog, 15, 25);
   cog = crack(cog, 65, 75);
   printJITD(cog, 0);
-
-  cog = splay(cog, cog->data.btree.lhs);
-  printf("\n\n");
+  printf("\n\n Reads after the decay function is run \n");
   printJITD(cog, 0);
-
-  cog = splay(cog, cog->data.btree.rhs->data.btree.rhs);
-  printf("\n\n");
-  printJITD(cog, 0);
+  //inOrderTraversal(cog);
 }
+
+void readsCounterZipfianTest() {
+  int size = 1000000;
+  buffer b = buffer_alloc(size);
+
+  for(int i = 0; i < size; i++){
+    b->data[i].key = rand() % 1000000;
+    b->data[i].value = rand();
+  }
+
+  struct cog *cog_result;
+  struct cog *cog1 = make_array(0, size, b);
+  struct cog *cog2 = make_array(0, size, b);
+  printf("Performing the zipfian read test without read count \n\n");
+  cog_result = timeRun(zipfianReads_splay, cog1, 10000, 100);
+  printf("Performing the zipfian read test with read count \n\n");
+}
+
+void readsCounterRandomTest() {
+  int size = 1000000;
+  buffer b = buffer_alloc(size);
+
+  for(int i = 0; i < size; i++){
+    b->data[i].key = rand() % 1000000;
+    b->data[i].value = rand();
+  }
+
+  struct cog *cog_result;
+  struct cog *cog1 = make_array(0, size, b);
+  struct cog *cog2 = make_array(0, size, b);
+  struct cog *cog3 = make_array(0, size, b);
+
+  long number = 1000000;
+  long interval = 100;
+  long *arr ;
+  long range=100;
+  arr = random_array(number,1000000);
+  printf("Nmber of reads:%ld  Selectivity range:%ld Interval of splay:%ld \n", number, range, interval ); 
+  printf("Performing the random read test without read count \n\n");
+  cog_result = timeRun_array(randomReads_array, cog1, number, range,arr,interval);
+  printf("Performing the random read test with read count \n\n");
+  cog_result = timeRun_array(randomReads_splay_array_max_read, cog2, number, range,arr,interval);
+  printf("Performing the random read test with median splay \n\n");
+  cog_result = timeRun_array(randomReads_splay_array_max_read, cog3, number, range,arr,interval);
+}
+
+void readsCounterZipfianArrayTest() {
+
+  int size = 1000000;
+  buffer b = buffer_alloc(size);
+
+  for(int i = 0; i < size; i++){
+    b->data[i].key = rand() % 1000000;
+    b->data[i].value = rand();
+  }
+
+  struct cog *cog_result;
+  struct cog *cog1 = make_array(0, size, b);
+  struct cog *cog2 = make_array(0, size, b);
+  struct cog *cog3 = make_array(0, size, b);
+  long *arr ;
+
+  long number = 10000000;
+  long interval = 100;
+  long range=100;
+  arr = zipfian_array(number,10000);
+  printf("Nmber of reads:%ld  Selectivity range:%ld Interval of splay:%ld \n", number, range, interval ); 
+  printf("Performing the zipfian read test with read count \n\n");
+  cog_result = timeRun_array(zipfianReads_splay_array_max_read, cog1, number, range,arr,interval);
+  printf("Performing the zipfian read test without read count \n\n");
+  cog_result = timeRun_array(zipfianReads_array, cog2, number, range,arr,interval);
+  printf("Performing the zipfian read test without read count with splay around median \n\n");
+  cog_result = timeRun_array(zipfianReads_splay_array_median, cog3, number, range,arr,interval);
+
+}
+
+*/
+void readsCounterZipfianScrambledArrayTest() {
+
+  int size = 100000000;
+  buffer b1 = buffer_alloc(size);
+  buffer b2 = buffer_alloc(size);
+  buffer b3 = buffer_alloc(size);
+  int data;
+  for(int i = 0; i < size; i++){
+    data = rand() % 1000000;
+    b1->data[i].key = data;
+    b1->data[i].value = rand();
+
+    b2->data[i].key = data;
+    b2->data[i].value = rand();
+
+    b3->data[i].key = data;
+    b3->data[i].value = rand();
+  }
+
+  struct cog *cog_result;
+  struct cog *cog1 = make_array(0, size, b1);
+  struct cog *cog2 = make_array(0, size, b2);
+  struct cog *cog3 = make_array(0, size, b3);
+  long *arr ;
+  long number = 1000000;
+  long interval = 100;
+  long range = 1000;
+  arr = zipfian_scrambled_array(number,10000000);
+  printf("Nmber of reads:%ld  Selectivity range:%ld Interval of splay:%ld \n", number, range, interval ); 
+  printf("\n\nPerforming the scrambled zipfian read test without read count \n");
+  cog_result = timeRun_array(zipfianReads_array, cog1, number, range,arr,interval);
+  printf("\n\nPerforming the scrambled zipfian read test without read count with splay around median \n");
+  cog_result = timeRun_array(zipfianReads_splay_array_median, cog2, number, range,arr,interval);
+  setInterval(100);
+  printf("\n\nPerforming the scrambled zipfian read test with read count \n");
+  cog_result = timeRun_array(zipfianReads_splay_array_max_read, cog3, number, range,arr,interval);
+
+}
+
+void dummytest(){
+  int size = 100;
+  buffer b = buffer_alloc(size);
+
+  for(int i = 0; i < size; i++){
+    b->data[i].key = rand() % 1000000;
+    b->data[i].value = rand();
+  }
+
+  long number = 10;
+  long interval = 300;
+  long range = 100;
+
+  struct cog *cog_result;
+  struct cog *cog1 = make_array(0, size, b);
+  long *arr ;
+  arr = zipfian_array(number,10000);
+  cog_result = timeRun_array(zipfianReads_splay_array_median, cog1, number, range,arr,interval);
+  printJITD(cog_result,0);
+  //json_object *jobj_root = tree_json(cog_result);
+  //printf ("The json object created: %s\n",json_object_to_json_string(jobj_root));
+  dump_cog(cog_result,"cog.json");
+  //FILE *fp;
+  //fp=fopen("test.json", "w");
+  //fprintf(fp,json_object_to_json_string(jobj_root));
+
+  }
 
 void testZipfinize() {
   double alpha = 1;
   long elements = 10000;
-  long reads = 1000;
+  long reads = 100;
   long count = getZipfCountAtCDF(elements, alpha, .5);
   long levels = getNumberOfLevels(count);
+  
   struct cog *cog = mk_random_array(elements);
   rand_val(34534);
   cog = zipfianReads(cog, alpha, reads, elements);
+  dump_cog(cog,"before.json");
   cog = zipfinize(cog, levels);
+  dump_cog(cog,"after.json");
   printJITD(cog, 0);
-  jsonJITD(cog, "test.json");
+  printf("Number of levels :%li\n",levels);
+  printf("Count value is \n");
 }
 
-void testConvergence() {
-  double alpha = 1;
-  int size, range;
-  int runs = 10;
-  long totalSplays[runs], totalReads[runs], totalZipfinize[runs];
-  long interval, levels, threshold, converge;
-  struct cog *cog;
 
-  size = 1000000;
-  range = 1000;
 
-  for (int i = 0; i < runs; i++) {
-    interval = 100;
-    threshold = 50;
-    converge = 1;
-
-    totalSplays[i] = 0;
-    totalReads[i] = 0;
-    totalZipfinize[i] = 0;
-
-    initInterval(interval, threshold);
-    levels = getNumberOfLevels(range);
-    sleep(1);
-    rand_val(seedlessRandom());
-    cog = getRandomArray(size, range);
-
-    do {
-      interval = getInterval();
-      totalReads[i] += interval;
-      cog = zipfianReads(cog, alpha, interval, range);
-      cog = zipfinize(cog, levels);
-      totalSplays[i] += getSplays();
-      totalZipfinize[i] += 1;
-    } while (getSplays() > converge);
-  }
-
-  long splays = 0;
-  long reads = 0;
-  long zipfs = 0;
-  for (int i = 0; i < runs; i++) {
-    splays += totalSplays[i];
-    reads += totalReads[i];
-    zipfs += totalZipfinize[i];
-  }
-  splays /= runs;
-  reads /= runs;
-  zipfs /= runs;
-  printf("[AVERAGE] SPLAYS: %li READS: %li ZIPFINIZE: %li\n", splays, reads, zipfs);
-}
-
-void testSpeed() {
-  struct cog *cog;
-  struct timeval stop, start;
-  int size, range, chunk, total;
-  long interval, threshold, levels;
-  double alpha = 1;
-  size = 1000000;
-  range = 1000;
-  interval = 100;
-  threshold = 50;
-
-  rand_val(4357894);
-  initInterval(interval, threshold);
-  cog = getRandomArray(size, range);
-  levels = getNumberOfLevels(range);
-
-  total = 1000000;
-
-  gettimeofday(&start, NULL);
-
-  while (1) {
-    if (total == 0) break;
-    chunk = getInterval();
-    if (chunk > total) chunk = total;
-
-    cog = zipfianReads(cog, alpha, interval, range);
-
-    // Median
-//    struct cog *median = getMedian(cog);
-//    cog = splay(cog, median);
-
-    // Harvest
-//    struct cog *harvest = getHarvest();
-//    cog = splay(cog, harvest);
-
-    // Zipfian Policy
-//    cog = zipfinize(cog, levels);
-
-    total -= chunk;
-  }
-
-  gettimeofday(&stop, NULL);
-
-  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
-  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
-  printf("Took %lld milliseconds\n", stopms - startms);
-}
 #endif
 
 int main(int argc, char **argv) {
@@ -394,13 +494,30 @@ int main(int argc, char **argv) {
 //  test9();
 
 #ifdef __ADVANCED
-//  readsCounterTest();
-//  printf("%lf\n", harmonic(2,1));
-//  printf("%lu\n", getZipfCountAtCDF(100000, 1, 0.50));
-//  printf("%lu\n", getNumberOfLevels(236));
-//  testZipfinize();
-//  testConvergence();
-  testSpeed();
+  //readsCounterTest();
+  //readsCounterZipfianTest();
+  //readsCounterZipfianArrayTest();
+  //readsCounterRandomTest();
+  //readsCounterZipfianArrayTest();
+  //readsCounterRandomTest();
+  //struct cog *cog;
+  //cog = mk_random_array(100);
+  //timeRun(randomReads, cog, 1000, 1000000);
+  //printJITD(cog,0);
+  //splayTest();
+  //cog = timeRun(randomReads, cog, 10, 250);
+  //printJITD(cog,0);
+  //splayTest();  
+  //testZipfinize();
+  //dummytest();
+
+  readsCounterZipfianScrambledArrayTest();
+  //readsCounterRandomTest();
+  //readsCounterZipfianArrayTest();
+  // TODO: Alok - please create tests to comprehensively showcase that your work is correct - test every case
+  // TODO: Archana - please create tests to comprehensively showcase that your work is correct - test every case
+  // TODO: Aurijoy - please create tests to comprehensively showcase that your work is correct - test every case
+  // TODO: Razieh - please create tests to comprehensively showcase that your work is correct - test every case
 #endif
 
 #ifdef __HARVEST

@@ -12,8 +12,9 @@
 #define _DECAY_THRESHOLD LONG_MAX - (LONG_MAX / _DECAY_FACTOR)
 
 static long _interval  = 100;
-static long _threshold = 10;
+static long _threshold = 50;
 static long _splays    = 0;
+static long total_splay =0;
 
 /**
  * Attempt to find a good splay candidate - usually highest node in the subtrees.
@@ -81,8 +82,35 @@ struct cog *zipfinize(struct cog *cog, long levels) {
   struct cog *rearranged = zipfinizeSubtree(cog, levels);
   double speed = 0.1;
   double delta = speed * (double) _interval;
+  total_splay+=_splays;
   if (_splays <= _threshold) _interval += delta;
   else _interval -= delta;
+  printf("Number of _splays :%ld\n",_splays);
+  //printf("Total number of splays :%ld \n",total_splay );
+  return rearranged;
+}
+
+/**
+ * Moves up nodes into the given number of levels so that the resulting tree has close to a
+ * Zipfian distribution for the given levels based on the number of reads.
+ *
+ * @param cog - root of the tree
+ * @param levels - given number of levels
+ * @return the new root of the rearranged tree
+ */
+
+struct cog *splay_median(struct cog *cog) {
+  decay(cog);
+  _splays = 0;
+  struct cog *rearranged = splay(cog,getMedian(cog));
+  double speed = 0.1;
+  double delta = speed * (double) _interval;
+  total_splay+=_splays;
+  if (_splays <= _threshold) _interval += delta;
+  else _interval -= delta;
+  //printf("Number of _splays :%ld\n",_splays);
+  //printf("Total number of splays :%ld \n",total_splay );
+  //_interval+=100;
   return rearranged;
 }
 
@@ -146,6 +174,7 @@ void initInterval(long interval, long threshold) {
  * @return the next interval
  */
 long getInterval() {
+  //printf("Returning the interval %ld\n",_interval );
   return _interval;
 }
 
@@ -156,14 +185,5 @@ long getInterval() {
  */
 long getThreshold() {
   return _threshold;
-}
-
-/**
- * Acquires the number of splays performed during the last zipfinize operation.
- *
- * @return the number of splays performed during the last zipfinize operation
- */
-long getSplays() {
-  return _splays;
 }
 #endif

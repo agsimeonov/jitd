@@ -1,7 +1,9 @@
 #ifndef UTIL_LIB_H_SHIELD
 #define UTIL_LIB_H_SHIELD
 
+#include <json/json.h>
 #include "cog.h"
+
 
 
 /**
@@ -12,14 +14,6 @@
  * @param depth - depth of the current cog in the tree - set to 0 for root
  */
 void printJITD(struct cog *c, int depth);
-
-/**
- * Converts the JITD to JSON and places it in the file './test.txt'.
- *
- * @param cog - the root cog
- * @param name - output file name
- */
-void jsonJITD(struct cog *cog, char *name);
 
 /** Prints the current pre-processor mode. */
 void printMode();
@@ -74,33 +68,6 @@ struct cog *timeRun(struct cog *(*function)(struct cog *, long, long),
  */
 struct cog *randomReads(struct cog *cog, long number, long range);
 
-/**
- * Do a given number of zipfian reads on a cog.
- *
- * @param cog - the given cog
- * @param number - number of reads to do on a cog
- * @param alpha - zipfian rate of decay
- * @param range - the key range for reads
- * @return the resulting BTree
- */
-struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range);
-
-/**
- * Acquire a random number - no seed issues.
- *
- * @return a random number
- */
-int seedlessRandom();
-
-/**
- * Acquire a random array cog.
- *
- * @param size - size of the array
- * @param range - key range
- * @return a random array cog
- */
-cog *getRandomArray(int size, int range);
-
 #ifdef __HARVEST
 /**
  * Run a test involving reads and splaying on a harvested value (last value read).
@@ -116,6 +83,57 @@ struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay,
 #endif
 
 #ifdef __ADVANCED
+struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long *,long interval),
+                    struct cog *cog,
+                    long a,
+                    long b,
+                    long *arr,
+                    long interval) ;
+
+/*long *random_array(long number,long range);
+
+struct cog *randomReads_array(struct cog *cog, long number, long range,long *arr,long interval) ;
+struct cog *randomReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr,long interval) ;
+
+long *zipfian_array(long number,long range);
+long *zipfian_scrambled_array(long number,long range);
+void *splay_level(struct cog *root, long levels);
+
+struct cog *zipfianReads_splay_array_max_read(struct cog *cog, long number, long range,long *arr,long interval);
+struct cog *zipfianReads_splay_array_median(struct cog *cog, long number, long range,long *arr,long interval);
+struct cog *zipfianReads_array(struct cog *cog, long number, long range,long *arr,long interval) ;*/
+
+struct cog *sort(struct cog *cog);
+
+/***
+ * Dump the json structure of tree into a file
+ * @param cog - root cog
+ * @param filename
+ **/
+ void dump_cog(struct cog *cog,char filename[256]);
+
+
+
+
+/**
+ * Returns the json structure for the tree.
+ *
+ * @param cog - a given cog
+ * @return the json object for the particular tree
+ */
+json_object *tree_json(struct cog *cog);
+
+/**
+ * Do a given number of zipfian reads on a cog.
+ *
+ * @param cog - the given cog
+ * @param number - number of reads to do on a cog
+ * @param alpha - zipfian rate of decay
+ * @param range - the key range for reads
+ * @return the resulting BTree
+ */
+struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range);
+
 /**
  * Acquires the cumulative reads at a node if possible.
  *
@@ -131,6 +149,8 @@ long getCumulativeReads(struct cog *cog);
  * @return the actual read count for that given BTree node
  */
 long getReadsAtNode(struct cog *cog);
+
+
 #endif
 
 #endif

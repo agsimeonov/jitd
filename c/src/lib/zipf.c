@@ -1,11 +1,9 @@
 #include <math.h>
 #include <assert.h>
 
-#include "util.h"
 #include "zipf.h"
 
-
-static int _initialized = FALSE;
+#define pow fastPow
 
 /**
  * Acquire a Zipf random variable.
@@ -15,20 +13,18 @@ static int _initialized = FALSE;
  * @return a Zipf random variable
  */
 int zipf(double alpha, int n) {
-  static int    first = TRUE; // Static first time flag
+  static int    first = TRUE_1; // Static first time flag
   static double c     = 0;    // Normalization constant
   double        z;            // Uniform random number (0 < z < 1)
   double        sum_prob;     // Sum of probabilities
   double        zipf_value;   // Computed exponential value to be returned
   int           i;            // Loop counter
 
-  if (_initialized == FALSE) rand_val(seedlessRandom());
-
   // Compute normalization constant on first call only
-  if (first == TRUE) {
+  if (first == TRUE_1) {
     for (i=1; i<=n; i++) c = c + (1.0 / pow((double) i, alpha));
     c = 1.0 / c;
-    first = FALSE;
+    first = FALSE_1;
   }
 
   // Pull a uniform random number (0 < z < 1)
@@ -70,7 +66,6 @@ double rand_val(int seed) {
 
   // Set the seed if argument is non-zero and then return zero
   if (seed > 0) {
-    _initialized = TRUE;
     x = seed;
     return(0.0);
   }
@@ -111,7 +106,7 @@ double harmonic(int n, double alpha) {
  * @return number of elements at the target CDF for the given size Zipfian distribution
  */
 long getZipfCountAtCDF(long n, double alpha, float cdf) {
-  return pow(E_NUM, ((cdf * harmonic(n, alpha)) - GAMMA)) - 0.5;
+  return pow(M_E, ((cdf * harmonic(n, alpha)) - GAMMA)) - 0.5;
 }
 
 /**
@@ -123,3 +118,12 @@ long getZipfCountAtCDF(long n, double alpha, float cdf) {
 long getNumberOfLevels(long elements) {
   return ceill(log2(elements));
 }
+
+
+double fastPow(double a, double b) {
+	union { double d; int x[2]; } u = { a };
+	u.x[1] = (int)(b * (u.x[1] - 1072632447) + 1072632447);
+	u.x[0] = 0;
+	return u.d;
+}
+

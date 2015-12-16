@@ -1,12 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <time.h>
+#include <stdlib.h>
+#include <json/json.h>
+#include <string.h>
 
 #include "cog.h"
 #include "cracker.h"
 #include "splay.h"
 #include "zipf.h"
+#include "splay.h"
+#include "policy.h"
+#include "util.h"
+
 
 
 /**
@@ -15,7 +21,6 @@
  * @param cog - cog to print
  */
 void printArrayCog(struct cog *cog) {
-#ifndef __ADVANCED
   printf("[");
 
   if (cog->type == COG_ARRAY) {
@@ -37,7 +42,6 @@ void printArrayCog(struct cog *cog) {
 
     printf(">");
   }
-#endif
 }
 
 /**
@@ -54,7 +58,7 @@ void printTreeCog(struct cog *cog) {
 #ifndef __ADVANCED
     printf("≤ %ld", cog->data.btree.sep);
 #else
-    printf("%ld|%ld", cog->data.btree.rds, getReadsAtNode(cog));
+    printf("≤ %ld Reads: %ld", cog->data.btree.sep, cog->data.btree.rds);
 #endif
   }
 }
@@ -132,35 +136,6 @@ void printJITD(struct cog *cog, int depth) {
 
     printCog(cog);
   }
-}
-
-void jsonize(struct cog *cog, FILE *file) {
-  if (cog == NULL) fprintf(file, "null");
-
-  if (cog->type == COG_BTREE) {
-    fprintf(file, "{\"name\":\"%li ", cog->data.btree.sep);
-    fprintf(file, "Total: %li ", cog->data.btree.rds);
-    fprintf(file, "Reads: %li\",", getReadsAtNode(cog));
-    fprintf(file, "\"children\":[");
-    jsonize(cog->data.btree.lhs, file);
-    fprintf(file, ",");
-    jsonize(cog->data.btree.rhs, file);
-    fprintf(file, "]}");
-  } else {
-    fprintf(file, "{\"name\":\"Elements\"}");
-  }
-}
-
-/**
- * Converts the JITD to JSON and places it in the file './test.txt'.
- *
- * @param cog - the root cog
- * @param name - output file name
- */
-void jsonJITD(struct cog *cog, char *name) {
-  FILE *file = fopen(name, "w");
-  jsonize(cog, file);
-  fclose(file);
 }
 
 /** Prints the current pre-processor mode. */
@@ -300,60 +275,6 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
   return cog;
 }
 
-/**
- * Do a given number of zipfian reads on a cog.
- *
- * @param cog - the given cog
- * @param number - number of reads to do on a cog
- * @param alpha - zipfian rate of decay
- * @param range - the key range for reads
- * @return the resulting BTree
- */
-struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range) {
-  for (long i = 0; i < number; i++) {
-    long a = zipf(alpha, range);
-    long b = zipf(alpha, range);
-    long low = a <= b ? a : b;
-    long high = a > b ? a : b;
-    cog = crack(cog, low, high);
-  }
-  return cog;
-}
-
-/**
- * Acquire a random number - no seed issues.
- *
- * @return a random number
- */
-int seedlessRandom() {
-  static int first = 1;
-
-  if (first == 1) {
-    srand(time(NULL) ^ (int)&seedlessRandom);
-    first = 0;
-  }
-
-  return rand();
-}
-
-/**
- * Acquire a random array cog.
- *
- * @param size - size of the array
- * @param range - key range
- * @return a random array cog
- */
-cog *getRandomArray(int size, int range) {
-  buffer buffer = buffer_alloc(size);
-
-  for(int i = 0; i < size; i++){
-    buffer->data[i].key = rand() % range;
-    buffer->data[i].value = rand();
-  }
-
-  return make_array(0, size, buffer);;
-}
-
 #ifdef __HARVEST
 /**
  * Run a test involving reads and splaying on a harvested value (last value read).
@@ -368,7 +289,7 @@ cog *getRandomArray(int size, int range) {
 struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay, int steps) {
   for (int i = 0; i < steps; i++) {
     cog = timeRun(randomReads, cog, reads, range);
-    if (doSplay != FALSE) {
+    if (doSplay != FALSE_1) {
       cog = splay(cog, getHarvest());
     }
   }
@@ -377,6 +298,102 @@ struct cog *splayOnHarvest(struct cog *cog, long reads, long range, int doSplay,
 #endif
 
 #ifdef __ADVANCED
+
+/**
+ * Run a test involving reads and splaying on a harvested value (last value read).
+ *
+ * @param number - count of the number of random reads
+ * @param range - the key range for reads
+ * @param doSplay - boolean TRUE or FALSE, if TRUE splay after every step, otherwise just read
+ * @param steps - number of steps
+ * @return the array for the random reads
+ */
+long *random_array(long number,long range) {
+  long *arr = malloc(number * sizeof(long));
+  for (long i = 0; i < number; i++) {
+    long a = rand() % range;    
+    *(arr+i)=a;
+  }
+  return arr;
+}
+
+
+struct cog *timeRun_array(struct cog *(*function)(struct cog *, long, long, long *,long),
+                    struct cog *cog,
+                    long a,
+                    long b,
+                    long *arr,
+                    long interval) {
+  struct timeval stop, start;
+  gettimeofday(&start, NULL);
+  //printf("The interval for splay is :%ld \n",interval);
+  struct cog *out = (*function)(cog, a, b,arr,interval);
+  gettimeofday(&stop, NULL);
+  long long startms = start.tv_sec * 1000LL + start.tv_usec / 1000;
+  long long stopms = stop.tv_sec * 1000LL + stop.tv_usec / 1000;
+  printf("Took %lld milliseconds\n", stopms - startms);
+  return out;
+}
+
+/**
+ * Returns the json structure for the tree.
+ *
+ * @param cog - a given cog
+ * @return the json object for the particular tree
+ */
+
+json_object *tree_json(struct cog *cog)
+{
+     json_object * jobj_root, *jobj_left, *jobj_right,*jobj_list, *jobj_int_right, *jobj_int_left, *jobj_ret;
+     jobj_root = json_object_new_object();
+     jobj_left = json_object_new_object();
+     jobj_right = json_object_new_object();
+     jobj_list = json_object_new_object();
+     jobj_ret = json_object_new_object();
+     json_object *jstring_left, *jstring_right, *jstring_root,*jstring_ret;
+
+      long root_sep,reads;
+      char tmp[250];
+      char *str;
+      str = (char *)malloc(sizeof(char)*100);
+      
+      
+      //Object to hold child array;
+      json_object *jarray = json_object_new_array();
+
+     struct cog *left,*right;
+     left = cog->data.btree.lhs;
+     right = cog->data.btree.rhs;
+     
+     if(cog->type==COG_BTREE)
+      {
+        root_sep = cog->data.btree.sep;
+        reads = cog->data.btree.rds;
+        sprintf(tmp, "%ld", root_sep);
+        strcat(str,"≤");
+        strcat(str,tmp);
+        strcat(str,",Reads ");
+        sprintf(tmp, "%ld", reads);
+        strcat(str,tmp);      
+        jstring_root = json_object_new_string(str);
+        jobj_left = tree_json(left);
+        jobj_right = tree_json(right);
+        json_object_array_add(jarray,jobj_left);
+        json_object_array_add(jarray,jobj_right);
+
+        json_object_object_add(jobj_root,"name", jstring_root); 
+        json_object_object_add(jobj_root,"children",jarray);
+        return jobj_root;
+
+      }
+      else
+        {
+          jstring_ret = json_object_new_string("Elements");
+          json_object_object_add(jobj_ret,"name",jstring_ret);
+          return jobj_ret;
+        }  
+}
+
 /**
  * Acquires the cumulative reads at a node if possible.
  *
@@ -401,4 +418,66 @@ long getReadsAtNode(struct cog *cog) {
   count -= getCumulativeReads(cog->data.btree.rhs);
   return count;
 }
+
+/**
+ * Do a given number of zipfian reads on a cog.
+ *
+ * @param cog - the given cog
+ * @param number - number of reads to do on a cog
+ * @param alpha - zipfian rate of decay
+ * @param range - the key range for reads
+ * @return the resulting BTree
+ */
+struct cog *zipfianReads(struct cog *cog, double alpha, long number, long range) {
+  for (long i = 0; i < number; i++) {
+    long a = zipf(alpha, range);
+    long b = zipf(alpha, range);
+    long low = a <= b ? a : b;
+    long high = a > b ? a : b;
+    cog = crack(cog, low, high);
+  }
+  return cog;
+}
+
+/***
+ * Dump the json structure of tree into a file
+ * @param cog - root cog
+ * @param filename
+ **/
+
+void dump_cog(struct cog *cog,char filename[256]){
+  FILE *fp;
+  fp=fopen(filename, "w");
+  fprintf(fp,json_object_to_json_string(tree_json(cog)));
+}
+
+void jsonize(struct cog *cog, FILE *file) {
+  if (cog == NULL) fprintf(file, "null");
+
+  if (cog->type == COG_BTREE) {
+    fprintf(file, "{\"name\":\"<=%li ", cog->data.btree.sep);
+    fprintf(file, "Total: %li ", cog->data.btree.rds);
+    fprintf(file, "Reads: %li\",", getReadsAtNode(cog));
+    fprintf(file, "\"children\":[");
+    jsonize(cog->data.btree.lhs, file);
+    fprintf(file, ",");
+    jsonize(cog->data.btree.rhs, file);
+    fprintf(file, "]}");
+  } else {
+    fprintf(file, "{\"name\":\"Elements\"}");
+  }
+}
+
+/**
+ * Converts the JITD to JSON and places it in the file './test.txt'.
+ *
+ * @param cog - the root cog
+ * @param name - output file name
+ */
+void jsonJITD(struct cog *cog, char *name) {
+  FILE *file = fopen(name, "w");
+  jsonize(cog, file);
+  fclose(file);
+}
+
 #endif

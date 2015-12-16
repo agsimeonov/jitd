@@ -219,19 +219,11 @@ cog *crack_scan(cog *c, long low, long high) {
     if(low < c->data.btree.sep) {
       if(high < c->data.btree.sep) {
         lhs = crack_scan(lhs, low, high);
-#ifdef __HARVEST
-        harvest = lhs;
-#endif
-
 #ifdef __ADVANCED
       reads += 2;
 #endif
       } else {
         lhs = crack_one(lhs, low);
-#ifdef __HARVEST
-        harvest = lhs;
-#endif
-
 #ifdef __ADVANCED
       reads += 1;
 #endif
@@ -250,6 +242,10 @@ cog *crack_scan(cog *c, long low, long high) {
 #endif
       }
     }
+
+#ifdef __HARVEST
+    harvest = lhs;
+#endif
 
     if(c->data.btree.lhs != lhs || c->data.btree.rhs != rhs) {
       long sep = c->data.btree.sep;
