@@ -134,6 +134,7 @@ void printJITD(struct cog *cog, int depth) {
   }
 }
 
+#ifdef __ADVANCED
 void jsonize(struct cog *cog, FILE *file) {
   if (cog == NULL) fprintf(file, "null");
 
@@ -162,6 +163,7 @@ void jsonJITD(struct cog *cog, char *name) {
   jsonize(cog, file);
   fclose(file);
 }
+#endif
 
 /** Prints the current pre-processor mode. */
 void printMode() {
@@ -304,8 +306,8 @@ struct cog *randomReads(struct cog *cog, long number, long range) {
  * Do a given number of zipfian reads on a cog.
  *
  * @param cog - the given cog
- * @param number - number of reads to do on a cog
  * @param alpha - zipfian rate of decay
+ * @param number - number of reads to do on a cog
  * @param range - the key range for reads
  * @return the resulting BTree
  */

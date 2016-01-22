@@ -339,7 +339,7 @@ void testSpeed() {
   cog = getRandomArray(size, range);
   levels = getNumberOfLevels(range);
 
-  total = 1000000;
+  total = 10000;
 
   gettimeofday(&start, NULL);
 
@@ -348,7 +348,7 @@ void testSpeed() {
     chunk = getInterval();
     if (chunk > total) chunk = total;
 
-    cog = zipfianReads(cog, alpha, interval, range);
+    cog = zipfianReads(cog, alpha, chunk, range);
 
     // Median
 //    struct cog *median = getMedian(cog);
@@ -359,7 +359,7 @@ void testSpeed() {
 //    cog = splay(cog, harvest);
 
     // Zipfian Policy
-//    cog = zipfinize(cog, levels);
+    cog = zipfinize(cog, levels);
 
     total -= chunk;
   }
